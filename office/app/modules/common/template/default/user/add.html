@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/static/admin/index/css/font.css">
+    <link rel="stylesheet" href="/static/admin/index/css/xadmin.css">
+    <script type="text/javascript" src="/static/public/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/admin/index/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]--></head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+
+            <!--姓名-->
+            <div class="layui-form-item">
+                <label for="username" class="layui-form-label">
+                    <span class="x-red">*</span>姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="username" name="username" required=""
+                           lay-verify="username" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <!--工号-->
+            <div class="layui-form-item">
+                <label for="userNo" class="layui-form-label">
+                    <span class="x-red">*</span>工号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="userNo" name="userNo" required=""
+                           lay-verify="userNo" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <!--手机号码-->
+            <div class="layui-form-item">
+                <label for="phone" class="layui-form-label">
+                    <span class="x-red">*</span>手机号码</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="phone" name="phone" required=""
+                           lay-verify="phone" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+
+            <!--企业邮箱-->
+            <div class="layui-form-item">
+                <label for="email" class="layui-form-label">
+                    <span class="x-red">*</span>企业邮箱</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="email" name="email" required=""
+                           lay-verify="email" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <!--所属部门-->
+            <div class="layui-form-item">
+                <label for="tree" class="layui-form-label">
+                    <span class="x-red">*</span>部门
+                </label>
+                <div class="layui-input-inline">
+                    <input type="hidden" lay-verify="department" id="department" name="department">
+                    <input type="text" id="tree" lay-filter="tree" class="layui-input">
+                </div>
+            </div>
+
+            <!--所属岗位-->
+            <div class="layui-form-item">
+                <label for="position" class="layui-form-label">
+                    <span class="x-red"></span>岗位</label>
+                <div class="layui-input-inline">
+                    <select id="position" name="position" lay-verify="position" lay-search>
+                        <option value="">请选择岗位</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">确认添加</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/static/public/layui/import.js"></script>
+<script>
+
+    /*定义统一资源路径*/
+    var apiUrl = '/common/user/';
+
+
+    //根据部门id获取所有岗位
+    function getPositionByDepartment(departmentId) {
+        $.ajax({
+            url: '/common/position/getPositionByDepartment',
+            type: 'get',
+            dataType: 'json',
+            data: {'departmentId': departmentId},
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $("#position option").remove();
+                    $("#position").append("<option value=''>请选择岗位</option>"); //为Select追加一个Option(下拉项)
+                    $.each(data.data, function (index, value) {
+                        $("#position").append("<option value='" + value.id + "'>" + value.positionName + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    layui.use(['layer', 'form', 'treeSelect'], function () {
+        var form = layui.form;
+
+        var $ = layui.jquery,
+            treeSelect = layui.treeSelect;
+
+        $('body').removeClass('layui-hide');//移除有hide属性的类
+
+        /*获取部门信息：begin*/
+        //部门选择器
+        treeSelect.render({
+            // 选择器
+            elem: '#tree',
+            // 数据
+            data: '/common/department/getDepartmentTree',
+            // 请求头
+            headers: {},
+            // 异步加载方式：get/post，默认get
+            type: 'get',
+            // 占位符
+            placeholder: '请选择部门',
+            // 是否开启搜索功能：true/false，默认false
+            search: true,
+            // 一些可定制的样式
+            style: {
+                folder: {
+                    enable: false
+                },
+                line: {
+                    enable: true
+                },
+                height:'180'
+            },
+            // 点击回调
+            click: function (d) {
+                //console.log(d.current); // 得到点击节点的treeObj对象
+                //console.log(d.current.id); // 得到点击节点的treeObj对象
+                var departmentId = d.current.id;
+                $('#department').val(departmentId);//设置部门id
+                //初始化岗位选择
+                getPositionByDepartment(departmentId);
+            },
+            // 加载完成后的回调函数
+            success: function (d) {
+                //console.log(d);
+                //选中节点，根据id筛选
+                /*if(parentId!=''&&parentId!=0){
+                    treeSelect.checkNode('tree', parentId);//设置选中节点，第二个参数为节点id
+                }*/
+
+
+                //获取zTree对象，可以调用zTree方法
+                //var treeObj = treeSelect.zTree('tree');
+                //console.log(treeObj);
+                //刷新树结构
+                treeSelect.refresh('tree');
+            }
+        });
+        /*获取部门信息：end*/
+
+        //自定义验证规则
+        form.verify({
+            username: function (value) {
+                var rep = /(^[\u4E00-\u9FA5]{1,5}$)|(^[A-Z][a-zA-Z]{1,30}$)/;
+                if (!rep.test(value)) {
+                    return '必须为中文名字或英文名字';
+                }
+            },
+            userNo: function (value) {
+                var rep = /(^\d{4}$)/;
+                if (!rep.test(value)) {
+                    return '必须为4位数字工号';
+                }
+            },
+            department: function (value) {
+                if (value == 0) {
+                    return '未选择部门';
+                }
+            }
+        });
+
+
+        //监听提交
+        form.on('submit(add)', function (data) {
+            console.log(data.field);
+            $.ajax({
+                url: apiUrl + 'addData',
+                type: 'post',
+                dataType: 'json',
+                data: data.field,
+                success: function (data) {
+                    console.log(data.message);
+                    if (data.code == '000') {
+                        layer.msg("添加成功",
+                            {
+                                icon: 6,
+                                time: 2000,
+                                closeBtn: true,
+                            }, function () {
+                                // 获得frame索引
+                                //var index = parent.layer.getFrameIndex(window.name);
+                                //关闭当前frame
+                                //parent.layer.close(index);
+                                parent.refresh();
+                            });
+
+                    } else {
+                        layer.msg(data.message, {
+                            anim: 6
+                        })
+                    }
+                }
+            })
+            return false;
+
+        });
+
+    });
+
+</script>
+</body>
+
+</html>

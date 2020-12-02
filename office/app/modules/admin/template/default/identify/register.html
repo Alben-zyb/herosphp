@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>注册</title>
+    <link type="text/css" rel="stylesheet" href="/static/admin/identify/css/register.css"/>
+    <link type="text/css" rel="stylesheet" href="/static/public/layui/css/layui.css"/>
+    <script type="text/javascript" src="/static/public/layui/layui.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/public/js/jsencrypt.min.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.cookie.js"></script>
+
+</head>
+
+<body>
+
+<div class="main">
+    <div class="main0">
+        <div class="main_left">
+            <div class="theimg"></div>
+            <div class="secimg"></div>
+            <div class="firimg"></div>
+        </div>
+        <div class="main_right">
+            <form class="layui-form" action="">
+                <div class="main_r_up">
+                    <a onclick="location.reload()">
+                        <div class="user"></div>
+                        <div class="pp">注册</div>
+                    </a>
+                </div>
+                <div class="sub"><p>已经注册？<a href="{$toLogin_url}"><span class="blue">请登录</span></a></p></div>
+                <!--后端传过来的公钥-->
+                <input id="public_key" type="hidden" value="{$public_key}">
+                <div class="txt">
+                    <span style="letter-spacing:10px;">手机号:</span>
+                    <input name="phone" id="phone" type="text" placeholder="请输入手机号码"
+                           lay-verify="phone"/>
+                </div>
+                <div class="txt ">
+                    <span style="letter-spacing:19px;">工号:</span>
+                    <input name="userNo" id="userNo" type="text" placeholder="请输入工号" lay-verify="userNo"/>
+                </div>
+                <div class="txt ">
+                    <span style="letter-spacing:19px;">姓名:</span>
+                    <input name="username" id="username" type="text" placeholder="请输入姓名" lay-verify="required"/>
+                </div>
+                <div class="txt ">
+                    <span style="letter-spacing:19px;">邮箱:</span>
+                    <input name="email" id="email" type="text" placeholder="请输入企业邮箱" lay-verify="email"/>
+                </div>
+                <div class="layui-form-item" style="width:456px; height:30px; margin-top:12px">
+                    <span style="letter-spacing:19px;">部门:</span>
+                    <div class="layui-input-block" style="width: 252px;">
+                        <input type="hidden" lay-verify="department" id="department" name="department">
+                        <input type="text" id="tree" lay-filter="tree" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width:456px; height:30px; margin-top:12px">
+                    <span style="letter-spacing:19px;">岗位:</span>
+                    <div class="layui-input-block" style="width: 252px;">
+                        <select name="position" id="position" lay-verify="required" lay-search="">
+                            <option value="">直接选择或搜索选择</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="txt ">
+                    <span style="letter-spacing:4px;">登录密码:</span>
+                    <input name="password" type="password" class="txtphone" placeholder="请输入密码"/>
+                </div>
+                <div class="txt">
+                    <span>短信验证码:</span>
+                    <input type="text" id="phoneCode" name="phoneCode" placeholder="请输入验证码" class="txtyzmdx" autocomplete="off"/>
+                    <input type="button" id="getCaptcha" class="getCaptcha" onClick="getPhoneCode(this)"
+                           value="获取短信验证码">
+                </div>
+                <div class="txt ">
+                    <span class="layui-icon"></span>
+                    <a lay-filter="register" lay-submit="">
+                        <div class="zhucebtn">确认注册</div>
+                    </a>
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="footer0">
+        <div class="footer_l">使用条款 | 隐私保护</div>
+        <div class="footer_r">© 2020 盟大塑化科技有限公司</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //后端传来的参数
+    var registerCheck_url = '{$registerCheck_url}';
+    var toLogin_url = '{$toLogin_url}';
+    var phoneCode_url = '{$phoneCode_url}';
+    var department_url = '{$department_url}';
+    var position_url = '{$position_url}';
+    //动态调整页面高度，全屏显示图片
+    $(document).ready(function () {
+        var height = $(document).height();
+        $('.main').css('height', height);
+    });
+
+    //===========================
+    //根据部门id获取所有岗位
+    function getPositionByDepartment(departmentId) {
+        $.ajax({
+            url: position_url,
+            type: 'get',
+            dataType: 'json',
+            data: {'departmentId': departmentId},
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $("#position option").remove();
+                    $("#position").append("<option value=''>请选择岗位</option>"); //为Select追加一个Option(下拉项)
+                    $.each(data.data, function (index, value) {
+                        $("#position").append("<option value='" + value.id + "'>" + value.positionName + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    layui.use(['layer', 'form', 'treeSelect'], function () {
+        var form = layui.form;
+
+        var $ = layui.jquery,
+            treeSelect = layui.treeSelect;
+
+        $('body').removeClass('layui-hide');//移除有hide属性的类
+
+        /*获取部门信息：begin*/
+        //部门选择器
+        treeSelect.render({
+            // 选择器
+            elem: '#tree',
+            // 数据
+            data: department_url,
+            // 请求头
+            headers: {},
+            // 异步加载方式：get/post，默认get
+            type: 'get',
+            // 占位符
+            placeholder: '请选择部门',
+            // 是否开启搜索功能：true/false，默认false
+            search: true,
+            // 一些可定制的样式
+            style: {
+                folder: {
+                    enable: false
+                },
+                line: {
+                    enable: true
+                },
+                height: '180'
+            },
+            // 点击回调
+            click: function (d) {
+                //console.log(d.current); // 得到点击节点的treeObj对象
+                //console.log(d.current.id); // 得到点击节点的treeObj对象
+                var departmentId = d.current.id;
+                $('#department').val(departmentId);//设置部门id
+                //初始化岗位选择
+                getPositionByDepartment(departmentId);
+            },
+            // 加载完成后的回调函数
+            success: function (d) {
+                //console.log(d);
+                //选中节点，根据id筛选
+                /*if(parentId!=''&&parentId!=0){
+                    treeSelect.checkNode('tree', parentId);//设置选中节点，第二个参数为节点id
+                }*/
+
+
+                //获取zTree对象，可以调用zTree方法
+                //var treeObj = treeSelect.zTree('tree');
+                //console.log(treeObj);
+                //刷新树结构
+                treeSelect.refresh('tree');
+            }
+        });
+        /*获取部门信息：end*/
+
+        //自定义验证规则
+        form.verify({
+            username: function (value) {
+                var rep = /(^[\u4E00-\u9FA5]{1,5}$)|(^[A-Z][a-zA-Z]{1,30}$)/;
+                if (!rep.test(value)) {
+                    return '必须为中文名字或英文名字';
+                }
+            },
+            userNo: function (value) {
+                var rep = /(^\d{4,5}$)/;
+                if (!rep.test(value)) {
+                    return '必须为4或5位数字工号';
+                }
+            },
+            department: function (value) {
+                if (value == 0) {
+                    return '未选择部门';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(register)', function (data) {
+            var field = data.field;//添加表单字段(这是引用赋值)
+            var remember = new Object();
+            remember['remember']=true;
+            remember['phone']=field['phone'];
+            remember['password']=field['password'];
+            console.log(remember);
+            var public_key = $('#public_key').val(); //获取公钥
+
+            field['phone'] = encryptPublic(field['phone'], public_key); //手机号rsa加密传输
+            field['password'] = encryptPublic(field['password'], public_key); //密码rsa加密传输
+            $.ajax({
+                url: registerCheck_url,
+                type: 'post',
+                dataType: 'json',
+                data: field,
+                success: function (data) {
+                    if (data.code == '000') {
+                        rememberLogin(remember);
+                        layer.msg("注册成功",
+                            {
+                                icon: 6,
+                                time: 2000,
+                                closeBtn: true,
+                            }, function () {
+                                window.location = toLogin_url; //注册成功,跳转登录
+                            });
+
+                    } else {
+                        layer.msg(data.message, {
+                            anim: 6
+                        })
+                    }
+                }
+            })
+            return false;
+
+        });
+
+
+    });
+    //===========================
+
+
+</script>
+<script src="/static/public/layui/import.js"></script>
+<script src="/static/admin/identify/js/script.js"></script>
+
+</body>
+</html>

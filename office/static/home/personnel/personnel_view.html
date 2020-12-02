@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>个人信息维护</title>
+
+    <link href="__ADMIN__/css/all.css" rel="stylesheet" type="text/css">
+    <link href="__ADMIN__/js/editor/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="__ADMIN__/js/editor/css/froala_editor.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+
+    <script src="__ADMIN__/js/jquery/jquery-3.3.1.js"></script>
+    <script src="__ADMIN__/js/layer-v3.1.1/layer/layer.js"></script>
+    <script type="text/javascript" src="js/edit.js"></script>
+</head>
+
+<body style="background-color: #e6ecf5">
+<div class="book_con01">
+
+    <h1 class="book_h01">个人详情</h1>
+    <form id="userAdd" enctype="multipart/form-data">
+        <table class="book_table" border="1" cellpadding="10">
+            <tr>
+                <td>
+                    <label class="td_label">姓名</label>
+                </td>
+                <td class="reead">
+                    <input id="id" name="id" type="hidden">
+                    <input id="relName" name="relName" type="text" class="book_input03" autocomplete="off"
+                           onKeyUp="value=value.replace(/[^\u4E00-\u9FA5]/g,'')"/>
+                    <span class="error errorRelName">*</span>
+                </td>
+
+                <td>
+                    <label class="td_label">性别</label>
+                </td>
+                <td class="reead" width="160px">
+                    <label style="margin-right: 10px;"><input name="sex" type="radio" value="1" style="width: 20px;"/>男</label>
+                    <label><input name="sex" type="radio" value="0" style="width: 20px;"/>女</label>
+                </td>
+                <td rowspan="2" class="reead" style="padding: 0" width="100px;">
+                    <!--头像-->
+                    <div style="position:relative;">
+                        <input type="hidden" id="oldHeadImg" name="oldHeadImg">
+                        <img id="head" src="__STATIC__/headImg/touxiang.png" width="70px" height="auto"
+                             alt='上传头像' class="easyui-tooltip"
+                             style="cursor: pointer;margin: 0 calc(50% - 35px);" title="上传头像">
+                        <input type="file" id="headImg" name="headImg" style="opacity: 0;">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="td_label">用户名</label>
+                </td>
+                <td class="reead" style="position: relative;">
+                    <input id="username" name="username" type="text" class="book_input03" autocomplete="off"
+                           readonly="readonly"/>
+                </td>
+
+                <td>
+                    <label class="td_label">民族</label>
+                </td>
+                <td class="reead">
+                    <select id="nation" name="nation"></select>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label class="td_label">角色</label>
+                </td>
+                <td>
+                    <input id="role" name="role" type="text" class="book_input03" autocomplete="off"/>
+                </td>
+                <td>
+                    <label class="td_label">年龄</label>
+                </td>
+                <td>
+                    <input id="age" name="age" type="text" class="book_input03" autocomplete="off"/>
+                </td>
+                <td>
+                    <label for="status" style="cursor: pointer">允许登录
+                        <input style="width:15px;height: 15px; cursor: pointer" type="checkbox" id="status" name="status">
+                    </label>
+                </td>
+
+            </tr>
+            <tr>
+                <td><label class="td_label">部门</label></td>
+                <td>
+                    <select id="department" name="department" class="form-control">
+                        <option>管理员</option>
+                        <option>后勤</option>
+                        <option>其它</option>
+                    </select>
+                </td>
+
+                <td><label class="td_label">政治面貌</label></td>
+                <td colspan="2">
+                    <select id="political" name="political">
+                        <option value="0">群众</option>
+                        <option value="1">团员</option>
+                        <option value="2">党员</option>
+                        <option value="3">其它</option>
+                    </select>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label class="td_label">职位</label>
+                </td>
+                <td >
+                    <select id="position" name="position">
+                        <option>--请选择--</option>
+                        <option value="0">语文老师</option>
+                        <option value="1">数学老师</option>
+                        <option value="2">全能老师</option>
+                    </select>
+                </td>
+
+                <td>
+                    <label class="td_label">身份证号码</label></td>
+                <td colspan="2">
+                    <input type="text" id="identityCard" name="identityCard" class="book_input03" autocomplete="off"/>
+                    <span class="error errorIDCard">*</span>
+                </td>
+
+
+            </tr>
+            <tr>
+                <td><label class="td_label">联系电话</label></td>
+                <td>
+                    <input id="mobile" name="mobile" type="text" class="book_input03" autocomplete="off"/>
+                    <span class="error errorMobile">*</span>
+                </td>
+                <td>
+                    <label class="td_label">邮箱</label>
+                </td>
+                <td colspan="2">
+                    <input id="email" name="email" type="text" class="book_input03" autocomplete="off"/>
+                    <span class="error errorEmail">*</span>
+                    <!--	安全邮箱，用于找回密码-->
+                    <ul class="mail">
+                        <li data-mail="@qq.com" class="item item1">@qq.com</li>
+                        <li data-mail="@sina.com" class="item item2">@sina.com</li>
+                        <li data-mail="@126.com" class="item item3">@126.com</li>
+                        <li data-mail="@163.com" class="item item4">@163.com</li>
+                        <li data-mail="@gmail.com" class="item item5">@gmail.com</li>
+                    </ul>
+                </td>
+            </tr>
+
+            <tr>
+                <td><label class="td_label">地址</label></td>
+                <td colspan="4">
+                    <div data-toggle="distpicker">
+                        <select id="province" name="province" class="book_input_select"></select>
+                        <select id="city" name="city" class="book_input_select"></select>
+                        <select id="district" name="district" class="book_input_select"></select>
+                        <span class="td_label">镇乡</span>
+                        <input id="addressDetail" name="addressDetail" type="text" style="width: auto;height: 26px;" autocomplete="off"/>
+                    </div>
+
+                </td>
+            </tr>
+
+        </table>
+        <span style="color:red;margin-left: 3%;">*为必填字段</span>
+        <p class="book_foot">
+            <input type="button" id="edit" value="编辑" class="button button-tiny button-rounded button-primary"/>
+            <input type="button" id="save" value="保存" class="button button-tiny button-rounded button-primary"/>
+            <input type="button" id="close" value="关闭" class="button button-tiny button-rounded button-primary"/>
+
+        </p>
+    </form>
+</div>
+
+<script>
+    //定义全局地址路径
+    var DOMAIN = "__WEB_URL__/";
+    var API_URL = DOMAIN + "admin/second.personnel/";
+    var userArr = '<?php echo json_encode($data) ?>'; //json数据方式获取
+    //var data='{$data}'; //数组方式获取
+    var userId='{$userId}';
+    var userArr = JSON.parse(userArr)[0];
+    var positions = '';//职位信息
+
+    console.log(userArr);
+    //初始化表单信息
+    $('#id').val(userArr.id);
+    $('#username').val(userArr.username);
+    $("input[name='sex'][value=" + (userArr.sex == '男' ? 1 : 0) + "]").attr("checked", true);
+    $('#age').val(userArr.age);
+
+    if(userArr.status==1||userArr.status==2){
+        $('#status').attr('checked','true');
+        //自身修改信息，不允许修改自身权限
+        if(userId==userArr.id){
+            console.log('userId')
+            $('#status').css('display','none');
+        }
+    }
+
+    $('#relName').val(userArr.relName);
+    $('#role').val(userArr.role);
+    //$('#position').val(userArr.position.positionName);
+    $('#mobile').val(userArr.mobile);
+
+    $("#political").find("option[value='" + userArr.political + "']").attr("selected", true);//初始化政治面貌
+    $('#identityCard').val(userArr.identityCard);
+    $('#email').val(userArr.email);
+    $('#oldHeadImg').val(userArr.headImg);
+    $("#head").attr("src", '__WEB_URL__/__STATIC__/headImg/' + userArr.headImg);
+
+    //设置所有input为不可编辑
+    $('.book_table').find("input").attr('readonly', 'readonly');
+    $(".book_table").find("input:radio").attr("disabled", "disabled");//单选按钮不可编辑
+    $('.book_table').find("select").attr('disabled', 'true');
+
+    $(function () {
+        //获取部门信息
+        $.ajax({
+            url: API_URL + 'getAllDepartment',
+            type: 'post',
+            dataType: 'json',
+            data: '',
+            async: false,
+            success: function (data) {
+                if (data.code == 1) {
+                    $('#department option').remove();//1.移除所有option
+                    $.each(data.data, function (index, department) {
+                        //2.添加部门option
+                        //console.log(department.departmentName);
+                        $('#department').append("<option value='" + department.id + "'>" + department.departmentName + "</option>");
+                    });
+                    //设置text为userArr.department.departmentName的项选中
+                    var departmentOption=0;
+                    if(userArr.department){
+                        departmentOption = userArr.department.id;
+                    }
+
+                    console.log('departmentOption' + departmentOption);
+                    $("#department").find("option[value='" + departmentOption + "']").attr("selected", true);
+
+                }
+            }
+
+        });
+        //获取职位信息
+        $.ajax({
+            url: API_URL + 'getPositionGroundByDepartment',
+            type: 'post',
+            dataType: 'json',
+            data: '',
+            async: false,
+            success: function (data) {
+                if (data.code == 1) {
+                    //console.log(data.data);
+                    //3.全局分组职位赋值，positions为二维数组，departmentID->positions
+                    positions = data.data;
+                }
+            }
+
+        });
+    })
+</script>
+<script>
+    var headFlag = false;
+    $(function () {
+        //初始化职位select option
+        //1.获取选中部门的option
+        var select = $('#department option:selected');
+        //2.获取选中部门option的value
+        var selectValue = select.val();
+        //3.初始化职位下拉列表的内容
+        positionInit(selectValue);
+        //4.设置text为userArr.department.departmentName的项选中
+        if(userArr.position){
+            var positionOption = userArr.position.id;
+        }else {
+            var positionOption = 0;
+        }
+        console.log('positionOption' + positionOption);
+        $("#position").find("option[value='" + positionOption + "']").attr("selected", true);
+        //4.添加监听
+        $("#department").change(function () {
+
+            //5.重新初始化职位position
+            var department = this.value;
+            positionInit(department);
+
+        });
+
+        $('#edit').click(function () {
+            //设置所有input为可编辑
+            $('.book_table').find("input").removeAttr('readonly');
+            $('.book_table').find("#username").attr('readonly', 'readonly');
+            $('.book_table').find("select").removeAttr('disabled');
+            $("#relName").parent().addClass("checkedN");
+            $("#identityCard").parent().addClass("checkedN");
+            $("#mobile").parent().addClass("checkedN");
+            $("#email").parent().addClass("checkedN");
+            $(".book_table").find("input:radio").removeAttr("disabled");//单选按钮可编辑
+            headFlag = true;
+        });
+        $('#head').click(function () {
+            if (headFlag == true) {
+                $('#headImg').trigger('click');
+            }
+            //alert('hello');
+        })
+        //关闭iframe
+        $('#close').click(function () {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //执行关闭
+        });
+        //提交按钮
+        $('#save').click(function () {
+            var province = $('#province option:selected').val();
+            var city = $('#city option:selected').val();
+            var district = $('#district option:selected').val();
+            console.log(province + city + district);
+
+
+            var checkList = $('#userAdd').find('td');//获取userAdd表单下的孙子节点td
+            var flag = 0; //记录存在类checkedN的个数
+            checkList.each(function (i) {
+                if ($(this).hasClass('checkedN')) {
+                    flag++;
+                }
+            });
+
+
+            var headUrl = '';//存放上传头像成功的返回的图片名称
+            /*图片上传服务器*/
+            var imgFile = $('#headImg')[0].files[0];
+            var imgData = new FormData();
+            imgData.append('file', imgFile);//图片信息
+            imgData.append('oldHeadImg', $('#oldHeadImg').val());//图片信息
+
+            console.log('flag:' + flag);
+            if (flag >= 4) {
+                if (typeof (imgFile) != 'undefined') {
+                    console.log('有图片');
+                    $.ajax({
+                        url: API_URL + "uploadHeadImg",
+                        type: 'POST',
+                        cache: false,
+                        data: imgData,
+                        dataType: 'json',
+                        async: false,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            //data.data为头像名称键值对
+                            if (data.code == 1) {
+                                headUrl = data.data.head_url;
+                                $('#headImg').val(''); //将图片输入框清空
+                                console.log(headUrl);
+                            } else {
+                                alert(data.msg);
+                                return false;
+                            }
+
+                        },
+                        error: function (data) {
+                            console.log("error");
+                            console.log(data);
+                            return false;
+                        }
+
+
+                    });
+                } else {
+                    console.log('没图片');
+                }
+                $.ajax({
+                    url: API_URL + 'edit',
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    data: $('#userAdd').serialize() + '&' + $.param({'headImg': headUrl}),
+                    success: function (data) {
+                        if (data == true) {
+                            console.log(data);
+                            layer.msg('修改成功！', {
+                                time: 2000, //自动关闭
+                                icon: 1,//0叹号，1打钩，2打叉，3问号，4锁，5哭脸，6笑脸，
+                                anim: 0, //0浮现，1从上跳入，2从下跳入，3从左跳入，4从左翻转，5闪现，6抖动
+                                //offset: ['50px', '150px'] //位置
+                            });
+                            $("#refresh_grid-table",window.parent.document).click();
+                        } else {
+                            alert(data);
+                        }
+
+                    }
+                })
+            } else {
+                layer.msg('没有更新字段！', {
+                    time: 2000, //自动关闭
+                    //icon: 7,//图标
+                    anim: 0,//动画样式
+                    //offset: ['50px', '150px'] //位置
+                });
+            }
+
+        })
+    });
+
+    //头像图片回显
+    $("#headImg").change(function () {
+        //拿到文件数据
+        var choose_file = $(this)[0].files[0];
+        //console.log(choose_file);
+        //截取图片名称小数点后的字符串
+        var ftype = choose_file.name.substring(choose_file.name.lastIndexOf(".") + 1);
+        //console.log(ftype);
+        //校验格式是否是图片类型
+        if (ftype == "jpg" || ftype == "png" || ftype == "jpeg" || ftype == "JPG") {
+            //限制大小，照片大小不能超过1M
+            var size = choose_file.size / 1024 / 1024;
+            if (size > 1) {
+                alert("头像不能大于1M");
+                return false;
+            }
+            // 实例化一个阅读器对象
+            var reader = new FileReader();
+            // 读取文件的路径，没有返回值,结果在reader.result里
+            reader.readAsDataURL(choose_file);
+            console.log(reader);
+            // 读取需要时间，读完后再修改图片路径
+            reader.onload = function (event) {
+                //console.log('能到这里');
+                //console.log(event);
+                //回显给上方图片中
+                $("#head").attr("src", event.target.result);
+            }
+
+        } else {
+
+            alert("头像格式不对，请重新选择！");
+            return false;
+
+        }
+
+    });
+
+    function positionInit(department) {
+        //6.清除职位下拉列表的内容
+        $("#position").empty();
+
+        //7.遍历二维数组中的职位
+        $("#position").append("<option value='0'>未选择职位</option>");
+        $.each(positions, function (departmentIndex, departmentValue) {
+            //alert(i+":"+n);
+            //8.判断用户选择的部门和遍历的职位
+            if (department == departmentIndex) {
+                //9.遍历该部门下的所有职位
+                //10.创建职位文本节点
+
+                $.each(departmentValue, function (positionIndex, positionValue) {
+                    //10.创建职位文本节点
+                    var textNode = document.createTextNode(positionValue.positionName);
+                    //11.创建option元素节点
+                    var opEle = document.createElement("option");
+                    opEle.setAttribute('value', positionValue.id);
+                    //12.将职位文本节点添加到option元素节点中去
+                    $(opEle).append(textNode);
+                    //13.将option元素节点追加到职位下拉列表中去
+                    $(opEle).appendTo($("#position"));
+                });
+
+            }
+        });
+    }
+</script>
+<!--56个民族下拉框-->
+<script>
+    var nations = ["汉族", "蒙古族", "回族", "藏族", "维吾尔族", "苗族", "彝族", "壮族", "布依族", "朝鲜族", "满族", "侗族", "瑶族", "白族",
+        "土家族", "哈尼族", "哈萨克族", "傣族", "黎族", "傈僳族", "佤族", "畲族", "高山族", "拉祜族", "水族", "东乡族", "纳西族", "景颇族", "柯尔克孜族", "土族",
+        "达斡尔族", "仫佬族", "羌族", "布朗族", "撒拉族", "毛南族", "仡佬族", "锡伯族", "阿昌族", "普米族", "塔吉克族", "怒族", "乌孜别克族", "俄罗斯族", "鄂温克族",
+        "德昂族", "保安族", "裕固族", "京族", "塔塔尔族", "独龙族", "鄂伦春族", "赫哲族", "门巴族", "珞巴族", "基诺族"];
+    var option = "";
+    $.each(nations, function (index, nation) {
+        option += '<option value="' + nation + '">' + nation + '</option>';
+    })
+    $(option).appendTo("#nation");
+    $("#nation").find("option[value='" + userArr.nation + "']").attr("selected", true);//初始化民族
+</script>
+
+<script src="__ADMIN__/jqGrid/js/bootstrap.min.js"></script>
+
+<script src="__STATIC__/address/js/distpicker.data.js"></script>
+<script src="__STATIC__/address/js/distpicker.js"></script>
+<script>
+    $(function () {
+        $("#province").find("option[value='" + userArr.province + "']").attr("selected", true);//初始化地址
+        $("#province").trigger('change');//js触发省份联动
+        $("#city").find("option[value='" + userArr.city + "']").attr("selected", true);//初始化地址
+        $("#city").trigger('change');//js触发城市联动
+        $("#district").find("option[value='" + userArr.district + "']").attr("selected", true);//初始化地址
+        $("#addressDetail").val(userArr.addressDetail);
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>进度条演示</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+
+
+    <script type="text/javascript" src="js/jquery.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript" src="../layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../js/html2canvas.min.js" charset="utf-8"></script>
+    <style type="text/css">
+
+        .timeAxis {
+            width: 400px;
+            position: relative;
+        }
+
+        .timeAxis .container {
+            width: 82%;
+            height: 1px;
+            background-color: #0C0C0C;
+            margin-top: 20px;
+            margin-left: 7%;
+            position: relative;
+        }
+
+        .directRix {
+            width: 100%;
+        }
+
+        .timeLength {
+
+            width: 100%;
+            position: absolute;
+            top: -10px;
+            border-radius: 3px;
+        }
+
+
+        .pieces {
+            text-align: center;
+            padding-right: 20px;
+            height: 10px;
+            border-radius: 3px;
+            background-color: #393D49;
+            position: relative;
+        }
+
+        .pieces span {
+            position: absolute;
+            left: -2px;
+            top: -15px;
+            font-size: 12px;
+            color: #2196F3;
+            display: none;
+        }
+
+        .directRix tr td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="timeAxis" id="time1">
+    <div class="container"></div>
+    <table class="directRix">
+        <tr>
+            <td>8:00</td>
+            <td>12:00</td>
+            <td>16:00</td>
+            <td>20:00</td>
+            <td>24:00</td>
+        </tr>
+    </table>
+</div>
+<div id="newApp"></div>
+<script>
+    var arr=[
+        '17:00-18:00',
+        '19:00-20:00',
+    ]
+    setTimeAxis(arr);
+    function setTimeAxis(arr){
+        $.each(arr,function (index,data) {
+            setValue(data);
+        })
+    }
+    function setValue(time) {
+        var timeArr = time.split('-');
+        var start = timeArr[0].substr(0, 5);
+        var finish = timeArr[1].substr(0, 5);
+        var startArr = start.split(':');
+        var finishArr = finish.split(':');
+        var s_hour = startArr[0];
+        var s_min = startArr[1];
+        var s_p = (s_hour - 8) * 60 + s_min * 1;
+
+        var f_hour = finishArr[0];
+        var f_min = finishArr[1];
+        var f_p = (f_hour - 8) * 60 + f_min * 1;
+
+        var left = (s_p / (16 * 60)) * 400 * 82 / 100;
+        var lenght = ((f_p - s_p) / (16 * 60)) * 400 * 82 / 100;
+
+        var timeLength = $('<div class="timeLength">\n' +
+            '            <div class="pieces">\n' +
+            '                <span></span>\n' +
+            '            </div>\n' +
+            '        </div>')
+        timeLength.css('margin-left', left + 'px');
+        timeLength.css('width', lenght + 'px');
+        timeLength.find('span').text(start + '~' + finish);
+        $('#time1 .container').append(timeLength);
+    }
+
+    $('.pieces').hover(function () {
+        $(this).find('span').css('display', 'block');
+    }, function () {
+        $(this).find('span').css('display', 'none');
+    })
+
+
+    $(function () {
+        setTimeout(function () {
+            html2canvas(document.querySelector("#time1"), {useCORS: true}).then(canvas => {
+                //layui.layer.close(vm.layerIndex)
+                var img = new Image();
+                img.setAttribute('crossOrigin', 'anonymous');
+                var url = canvas.toDataURL();
+                img.src = url;
+                $('#newApp').append(img).show();
+                $('#newApp img').css({width: '400px',position:"absolute",top:140})
+            });
+        },2000)
+
+    })
+</script>
+
+
+</body>
+</html>

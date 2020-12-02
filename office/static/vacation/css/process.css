@@ -1,0 +1,71 @@
+.vacation {
+    width: 210px;
+    height: auto;
+    margin-top: 10px;
+    padding: 2px 5px 50px 2px;
+    float: right;
+    box-sizing: border-box;
+    border: 1px solid #f2f2f2;
+    box-shadow: 10px 10px 5px #888888;
+}
+
+.process_body {
+    text-align: center;
+    margin-top: 15px
+}
+
+.shadow {
+    background-color: #f2f2f2;
+    box-shadow: 5px 5px 5px #888888;
+}
+
+.item {
+    width: 180px;
+    margin: 0 auto;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    box-shadow: 5px 5px 5px #888888;
+    overflow: hidden
+}
+
+.name {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    margin: auto 5px;
+    background-color: #009900;
+    border-radius: 50%;
+    float: left
+}
+
+.detail {
+    width: 110px;
+    margin-left: 10px;
+    float: left;
+    text-align: left
+}
+.doing{
+    color: #858af5;
+}
+.pass{
+    color: #5FB878;
+}
+
+.cancel{
+    color: #ff7f21;
+}
+.overdue{
+    color: #c2c2c2;
+}
+.refuse{
+    color: red;
+}
+
+.arrow{
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+    background-image: url("../images/arrow.png");
+    background-size: 100% 100%;
+}

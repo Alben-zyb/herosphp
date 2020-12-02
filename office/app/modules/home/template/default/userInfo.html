@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>个人资料--layui后台管理模板</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/static/public/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/static/home/css/userInfo.css" media="all"/>
+</head>
+<body style="border-top-left-radius: 10px;border-bottom-left-radius: 10px;">
+<div class="layui-fluid content">
+    <form class="layui-form" enctype="multipart/form-data">
+        <div>
+            <div style="float: right;width: 30%;">
+                <!--头像-->
+                <div style="position:relative;height: 120px;overflow: hidden">
+                    <img id="headImg" src="" width="100px" height="auto"
+                         alt='上传头像' class="easyui-tooltip"
+                         style="cursor: pointer;margin: 0 calc(50% - 50px);" title="上传头像">
+                    <input type="file" id="headImgInput" name="headImgInput" style="opacity: 0;">
+                </div>
+
+            </div>
+            <div style="float: left;width: 70%;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">工号</label>
+                    <!--隐藏id输入框-->
+                    <input type="hidden" id="id" name="id">
+                    <div class="layui-input-block">
+                        <input type="text" id="userNo" value="" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="username" name="username" value="" disabled
+                               class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">角色</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="role" value="" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-block">
+                <input type="tel" id="phone" name="phone" placeholder="请输入手机号码" lay-verify="required|phone"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">企业邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" id="email" name="email" value="" placeholder="请输入企业邮箱"
+                       lay-verify="required|email"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">部门</label>
+            <div class="layui-input-block">
+                <select id="department" name="department" class="layui-disabled" disabled>
+                    <option value="">请选择部门</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">岗位</label>
+            <div class="layui-input-block">
+                <select id="position" name="position" lay-verify="position" lay-search>
+                    <option value="">请选择岗位</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">直接上级</label>
+            <div class="layui-input-block">
+                <select class="users" id="superior" name="superior" lay-filter="check" lay-search>
+                    <option value="">请搜索选择直接上级</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">部门负责人</label>
+            <div class="layui-input-block">
+                <select class="users" id="departmentHead" name="departmentHead" lay-filter="check" lay-search>
+                    <option value="">请搜索选择部门负责人</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-left: 5%;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="edit">确认修改</button>
+                <a id="reset" class="layui-btn layui-btn-primary">重置</a>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="/static/public/layui/layui.js"></script>
+<!--<script type="text/javascript" src="/static/home/js/user.js"></script>-->
+<script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+<script>
+
+    //获取后台传来的参数
+    var apiUrl = '{$apiUrl}';
+    var headImg = ''; //存放头像路径
+    var user = new Object(); //存放用户信息
+
+    $(function () {
+        //获取用户信息，渲染页面
+        getUserInfo();
+        //重置
+        $('#reset').on('click', function () {
+            getUserInfo();
+        })
+    })
+
+
+    //根据登录用户详细信息，渲染初始表单
+    function getUserInfo() {
+        $.ajax({
+            url: apiUrl + 'getUserInfo',
+            type: 'post',
+            dataType: 'json',
+            data: '',
+            success: function (data) {
+                if (data.code == '000') {
+                    user = data.data;
+                    //设置初始表单
+                    $('#id').val(user.id);
+                    headImg = user.headImg;
+                    $('#headImg').attr('src', headImg);
+                    $('#userNo').val(user.userNo);
+                    $('#username').val(user.username);
+                    $('#phone').val(user.phone);
+                    $('#email').val(user.email);
+                    //获取用户角色
+                    getUserRole(user.id);
+                    //初始化部门下拉框的选中状态
+                    getDepartment(user.departmentId);
+                    //初始化岗位下拉框的选中状态
+                    getPositionByDepartment(user.departmentId, user.positionId);
+                    //初始化上级、部门负责人选中状态
+                    initUserSelect(user.superior, user.departmentHead);
+                    if (user.superior != '0') {
+                        $('#superior').attr('disabled', 'disabled');
+                        $('#superior').addClass('layui-disabled');
+                    }
+                    if (user.departmentHead != '0') {
+                        $('#departmentHead').attr('disabled', 'disabled');
+                        $('#departmentHead').addClass('layui-disabled');
+                    }
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    function getUserRole(id) {
+        $.ajax({
+            url: apiUrl + 'getUserRole',
+            type: 'post',
+            dataType: 'json',
+            data: {'id': id},
+            success: function (data) {
+                if (data.code == '000') {
+                    //设置初始表单
+                    var role = '';
+                    var length = data.data.length;
+                    $.each(data.data, function (index, value) {
+                        role += value.roleName;
+                        if (index < length - 1) {
+                            role += ' & ';
+                        }
+                    })
+                    $('#role').val(role);
+                    /*$('#id').val(data.id);
+                    $('#userNo').val(data.userNo);
+                    $('#username').val(data.username);
+                    $('#phone').val(data.phone);
+                    $('#email').val(data.email);*/
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    //获取所有部门，根据部门id初始化选中
+    function getDepartment(departmentId) {
+        $.ajax({
+            url: apiUrl + 'getDepartment',
+            type: 'get',
+            dataType: 'json',
+            data: '',
+            success: function (data) {
+                if (data.code == '000') {
+                    $("#department option").remove();
+                    $.each(data.data, function (index, value) {
+                        $("#department").append("<option value='" + value.id + "'>" + value.departmentName + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    $('#department').val(departmentId);
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    //根据部门id获取所有岗位
+    function getPositionByDepartment(departmentId, positionId) {
+        $.ajax({
+            url: '/common/position/getPositionByDepartment',
+            type: 'get',
+            dataType: 'json',
+            data: {'departmentId': departmentId},
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $("#position option").remove();
+                    $("#position").append("<option value=''>请选择岗位</option>"); //为Select追加一个Option(下拉项)
+                    $.each(data.data, function (index, value) {
+                        $("#position").append("<option value='" + value.id + "'>" + value.positionName + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    $('#position').val(positionId);
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    //获取所有用户（下拉选择）
+    function initUserSelect(superior, departmentHead) {
+        $.ajax({
+            url: apiUrl + 'getUserList',
+            type: 'get',
+            dataType: 'json',
+            data: '',
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $.each(data.data, function (index, value) {
+                        $(".users").append("<option value='" + value.id + "'>" + value.userNo + '--' + value.username + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    $('#superior').val(superior);
+                    $('#departmentHead').val(departmentHead);
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    //悬浮图片放大图片
+    $('#headImg').on('mouseover', function (e) {
+        var src = $(this).attr('src');
+        var div = $('<div class="bigHeadContent"></div>');
+        var img = $('<img class="headImg" src="' + src + '" height="100%" width="100%">');
+        div.append(img);
+        $('body').append(div);
+    });
+    //鼠标在图片上移动
+    $('#headImg').on('mousemove', function (e) {
+        var xx = e.originalEvent.x || e.originalEvent.layerX || 0;
+        var yy = e.originalEvent.y || e.originalEvent.layerY || 0;
+        var windowWidth = $(window).width(); //浏览器时下窗口可视区域宽度
+        $('.bigHeadContent').css('top', yy + 10);
+        $('.bigHeadContent').css('right', windowWidth - xx + 10);
+    });
+    $('#headImg').on('mouseleave', function () {
+        $('body').find('.bigHeadContent').remove();
+    })
+    //点击图片上传图片
+    $('#headImg').on('click', function () {
+        $('#headImgInput').trigger('click');
+    })
+    //头像图片回显
+    $("#headImgInput").change(function () {
+        //拿到文件数据
+        var choose_file = $(this)[0].files[0];
+        //console.log(choose_file);
+        //截取图片名称小数点后的字符串
+        var ftype = choose_file.name.substring(choose_file.name.lastIndexOf(".") + 1);
+        //console.log(ftype);
+        //校验格式是否是图片类型
+        if (ftype == "jpg" || ftype == "png" || ftype == "jpeg" || ftype == "JPG") {
+            //限制大小，照片大小不能超过1M
+            var size = choose_file.size / 1024 / 1024;
+            if (size > 3) {
+                layui.use('layer', function () {
+                    layui.layer.msg('头像不能大于3M', {
+                        anim: 6
+                    })
+                });
+                return false;
+            }
+            // 实例化一个阅读器对象
+            var reader = new FileReader();
+            // 读取文件的路径，没有返回值,结果在reader.result里
+            reader.readAsDataURL(choose_file);
+            //console.log(reader);
+            // 读取需要时间，读完后再修改图片路径
+            reader.onload = function (event) {
+                //console.log('能到这里');
+                //console.log(event);
+                //回显给上方图片中
+                $("#headImg").attr("src", event.target.result);
+                uploadHeadImg(); //上传头像
+            }
+
+        } else {
+            layui.use('layer', function () {
+                layui.layer.msg('头像格式不对，请重新选择！', {
+                    anim: 6
+                })
+            });
+            return false;
+
+        }
+
+    });
+
+    //上传头像
+    function uploadHeadImg() {
+        var headImg = '';//存放上传头像成功的返回的图片名称
+        /*图片上传服务器*/
+        var imgFile = $('#headImgInput')[0].files[0];
+        var imgData = new FormData();
+        imgData.append('file', imgFile);//图片信息
+
+        if (typeof (imgFile) != 'undefined') {
+            $.ajax({
+                url: apiUrl + "uploadHeadImg",
+                type: 'post',
+                cache: false,
+                data: imgData,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    //data.data为头像名称键值对
+                    if (data.code == '000') {
+                        headImg = data.data.headImg;
+                        layui.use('layer', function () {
+                            layui.layer.msg(data.message)
+                        });
+                        $('#headImg', parent.document).attr('src', headImg);
+                    } else {
+                        layui.use('layer', function () {
+                            layui.layer.msg(data.message, {
+                                anim: 6
+                            })
+                        });
+                        $('#headImg').attr('src', headImg);
+                        return false;
+                    }
+
+                },
+                error: function (data) {
+                    layui.use('layer', function () {
+                        layui.layer.msg('未知错误', {
+                            anim: 6
+                        })
+                    });
+                    return false;
+                }
+
+
+            });
+        } else {
+            console.log('没图片');
+        }
+    }
+
+
+    layui.use(['layer', 'form'], function () {
+        var form = layui.form;
+
+        var $ = layui.jquery;
+
+        //自定义验证规则
+        form.verify({
+            username: function (value) {
+                var rep = /(^[\u4E00-\u9FA5]{1,5}$)|(^[A-Z][a-zA-Z]{1,30}$)/;
+                if (!rep.test(value)) {
+                    return '必须为中文名字或英文名字';
+                }
+            },
+            userNo: function (value) {
+                var rep = /(^\d{4}$)/;
+                if (!rep.test(value)) {
+                    return '必须为4位数字工号';
+                }
+            },
+            department: function (value) {
+                if (value == 0) {
+                    return '未选择部门';
+                }
+            }
+        });
+
+
+        //监听提交
+        form.on('submit(edit)', function (data) {
+            console.log(data.field);
+            $.ajax({
+                url: apiUrl + 'editData',
+                type: 'post',
+                dataType: 'json',
+                data: data.field,
+                success: function (data) {
+                    console.log(data.message);
+                    if (data.code == '000') {
+                        layer.msg("修改成功", {
+                            icon: 6,
+                            time: 2000,
+                            closeBtn: true,
+                        });
+                        getUserInfo();
+                        //刷新数据
+                        setTimeout(function () {
+                            parent.refresh(user.superior, user.departmentHead);
+                        }, 1500)
+
+                    } else {
+                        layer.msg(data.message, {
+                            time: 2000,
+                            anim: 6
+                        });
+                        getUserInfo();
+                    }
+                },
+                error: function (data) {
+                    layer.msg(data.responseText, {
+                        anim: 6
+                    });
+                    setTimeout(function () {
+                        $('#reset').trigger('click');
+                    }, 1500)
+
+                }
+            })
+            return false;
+
+        });
+
+    });
+</script>
+</body>
+</html>

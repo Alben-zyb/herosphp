@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>实用的文章自定义标签</title>
+    <link rel="stylesheet" type="text/css" href="css/layui.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <style type="text/css">
+
+    </style>
+
+</head>
+<body>
+
+<div class="wrap">
+    <div id="tagValue" class="label-selected">
+
+    </div>
+
+
+    <!-- 前两个用于向后台提交数据     后3个用于页面判断 -->
+    <!-- 从标签库里选择的标签ID   1-->                      <!--仅从标签库选择，仅ID-->
+    <!-- <label>从标签库里选择的标签ID  :</label> -->
+    <div style="margin:15px;display:none;"><input name="imagelabels" id="imagelabels" style="width:300px"></input></div>
+
+    <!-- 新增的自定义标签文字     2-->                      <!--2、3、4 都是文字，且有对应顺序的数组-->
+    <!-- <label>新增的自定义标签文字  :</label> -->
+    <div style="margin:15px;display:none"><input name="newtext" style="width:300px"></input></div>
+
+    <!-- 所有已经选择的标签文字   3-->
+    <!-- <label>所有已经选择的标签文字  :</label> -->
+    <div style="margin:15px;display:none"><input name="selectedtext" style="width:300px"></input></div>
+    <!-- 所有标签库里的标签文字   4-->
+    <!-- <label>所有标签库里的标签文字  :</label> -->
+    <div style="margin:15px;display:none"><input name="existedtext" style="width:300px"></input></div>
+
+
+    <div class="add-label" style="display:inline-block">
+        <div class="layui-inline" style="width: 140px">
+            <select id="meetingMember" name="meetingMember" lay-verify="" lay-search>
+                <option value="">请搜索选择参会人员</option>
+                <option value="1">0001-傻鸟</option>
+                <option value="2">0002-知鸟</option>
+                <option value="3">0003-翠鸟</option>
+                <option value="4">0004-4鸟</option>
+                <option value="5">0005-5鸟</option>
+                <option value="6">0006-6鸟</option>
+                <option value="7">0007-7鸟</option>
+                <option value="8">0008-8鸟</option>
+                <option value="8">0009-9鸟</option>
+                <option value="10">0010-10鸟</option>
+                <option value="11">0011-11鸟</option>
+                <option value="12">0012-12鸟</option>
+                <option value="13">0013-13鸟</option>
+
+            </select>
+        </div>
+        <a id="label-self" class="layui-btn layui-btn-normal" style="border-radius:6px;"><span
+                class="glyphicon glyphicon-plus glyphicon glyphicon-plus glyphicon-plus-button"
+                aria-hidden="true"></span>添加标签</a>
+        <a class="layui-btn layui-btn-normal" style="width:200px;margin-top:30px;margin-left:100px;" onclick="submit()">提交</a>
+        <a class="layui-btn layui-btn-normal" style="width:200px;margin-top:30px;margin-left:100px;" onclick="labelReset()">重置</a>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="../../js/jquery.min.js"></script>
+<script type="text/javascript" src="js/layer.js"></script>
+<script type="text/javascript" src="js/label.js"></script>
+
+
+
+</body>
+</html>

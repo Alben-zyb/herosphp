@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/static/admin/index/css/font.css">
+    <link rel="stylesheet" href="/static/admin/index/css/xadmin.css">
+    <script type="text/javascript" src="/static/public/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/admin/index/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]--></head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+            <!--id-->
+            <div class="layui-form-item">
+                <label for="id" class="layui-form-label">
+                    <span class="x-red"></span>id</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="id" name="id" readonly="readonly" disabled="disabled" class="layui-input">
+                </div>
+
+            </div>
+            <!--模块-->
+            <div class="layui-form-item">
+                <label for="module" class="layui-form-label"><span class="x-red">*</span>模块</label>
+                <div class="layui-input-inline">
+                    <select id="module" name="module" lay-filter="module" lay-verify="module" lay-search>
+                        <option value="">请选择模块</option>
+                    </select>
+                </div>
+            </div>
+            <!--控制器-->
+            <div class="layui-form-item">
+                <label for="controller" class="layui-form-label"><span class="x-red">*</span>控制器</label>
+                <div class="layui-input-inline">
+                    <select id="controller" name="controller" lay-filter="controller" lay-verify="controller"
+                            lay-search>
+                        <option value="">请选择控制器</option>
+                    </select>
+                </div>
+            </div>
+            <!--方法-->
+            <div class="layui-form-item">
+                <label for="method" class="layui-form-label"><span class="x-red">*</span>方法</label>
+                <div class="layui-input-inline">
+                    <select id="method" name="method" lay-filter="method" lay-verify="method" lay-search>
+                        <option value="">请选择方法</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <!--权限名称-->
+            <div class="layui-form-item">
+                <label for="permissionName" class="layui-form-label"><span class="x-red">*</span>权限名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="permissionName" id="permissionName" placeholder="请输入权限名称"
+                           autocomplete="off" lay-verify="permissionName"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <button class="layui-btn" lay-filter="edit" lay-submit="">确认修改</button>
+                <a class="layui-btn" id="reset">重置</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/static/public/layui/import.js"></script>
+<script>
+
+    //获取后台传来的参数
+
+    var apiUrl = '{$apiUrl}';  //定义统一资源路径
+    var id = '{$id}'; //权限id
+
+    $(function () {
+        //获取权限信息，渲染页面
+        getPermissionById(id);
+
+        //重置
+        $('#reset').on('click', function () {
+            getPermissionById(id);
+        })
+    })
+
+    //根据id获取权限详细信息，渲染初始表单
+    function getPermissionById(id) {
+        $.ajax({
+            url: apiUrl + 'getPermissionById',
+            type: 'post',
+            dataType: 'json',
+            data: {'id': id},
+            success: function (data) {
+                if (data.code == '000') {
+                    console.log(data.data);
+                    var data = data.data;
+                    //设置初始表单
+                    $('#id').val(data.id);
+                    $('#permissionName').val(data.permissionName);
+
+                    var path = data.method.split('/');
+                    var module = path[0];//模块
+                    var controller = path[0] + '/' + path[1];//控制器
+                    var method = data.method;//方法
+                    //初始化模块下拉框的选中状态
+                    getModule(module);
+                    //初始化控制器下拉框的选中状态
+                    getControllerByModule(module, controller);
+                    //初始化方法下拉框的选中状态
+                    getMethodByController(controller, method);
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    //获取模块并初始化选中状态
+    function getModule(module) {
+        $.ajax({
+            url: apiUrl + 'getModule',
+            type: 'get',
+            dataType: 'json',
+            data: '',
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $("#module option").remove();
+                    $("#module").append("<option value=''>请选择模块</option>"); //为Select追加一个Option(下拉项)
+                    $.each(data.data, function (index, value) {
+                        $("#module").append("<option value='" + index + "'>" + value + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    $('#module').val(module);
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    //获取控制器并初始化选中状态
+    function getControllerByModule(module, controller = '') {
+        $.ajax({
+            url: apiUrl + 'getControllerByModule',
+            type: 'get',
+            dataType: 'json',
+            data: {module: module},
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $("#controller option").remove();
+                    $("#controller").append("<option value=''>请选择控制器</option>"); //为Select追加一个Option(下拉项)
+                    $.each(data.data, function (index, value) {
+                        $("#controller").append("<option value='" + index + "'>" + value + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    if (controller != '') {
+                        $('#controller').val(controller);//初始化选中
+                    }
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    //获取模块并初始化选中状态
+    function getMethodByController(controller, method = '') {
+        $.ajax({
+            url: apiUrl + 'getMethodByController',
+            type: 'get',
+            dataType: 'json',
+            data: {controller: controller},
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $("#method option").remove();
+                    $("#method").append("<option value=''>请选择方法</option>"); //为Select追加一个Option(下拉项)
+                    $.each(data.data, function (index, value) {
+                        $("#method").append("<option value='" + index + "'>" + value + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    if (method != '') {
+                        $('#method').val(method);//初始化选中
+                    }
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    layui.use(['layer', 'form', 'treeSelect'], function () {
+        var form = layui.form;
+
+        var $ = layui.jquery;
+
+        //监听模块下拉框
+        form.on('select(module)', function (data) {
+            var module = data.value; //得到被选中的值
+            console.log(module);
+            //每一次选择，清空控制器和方法下拉框
+            $('#controller option').not(":first").remove();
+            $('#method option').not(":first").remove();
+            getControllerByModule(module);
+        });
+        //监听控制器下拉框
+        form.on('select(controller)', function (data) {
+            console.log(data.value); //得到被选中的值
+            var controller = data.value;
+            getMethodByController(controller);
+        });
+        //监听方法下拉框
+        form.on('select(method)', function (data) {
+            console.log(data.value); //得到被选中的值
+            var method = data.value;
+            //layer.msg(method);
+        });
+
+
+        //自定义验证规则
+        form.verify({
+            permissionName: function (value) {
+                if (value == '' || value == 0) {
+                    return '权限名称不能为空';
+                }
+            },
+            module: function (value) {
+                if (value == '' || value == 0) {
+                    return '未选择模块';
+                }
+            },
+            controller: function (value) {
+                if (value == '' || value == 0) {
+                    return '未选择控制器';
+                }
+            },
+            method: function (value) {
+                if (value == '' || value == 0) {
+                    return '未选择方法';
+                }
+            },
+        });
+
+
+        //监听提交
+        form.on('submit(edit)', function (data) {
+            var field = data.field;//添加表单字段
+            var module = $('#module option:selected').text(); //获取选中的模块名称（非value值）
+            field['module'] = module;　//替换表单字段中module的值为text值
+            console.log(field);
+            $.ajax({
+                url: apiUrl + 'editData',
+                type: 'post',
+                dataType: 'json',
+                data: field,
+                success: function (data) {
+                    console.log(data.message);
+                    if (data.code == '000') {
+                        layer.msg("修改成功",
+                            {
+                                icon: 6,
+                                time: 2000,
+                                closeBtn: true,
+                            }, function () {
+                                // 获得frame索引
+                                //var index = parent.layer.getFrameIndex(window.name);
+                                //关闭当前frame
+                                //parent.layer.close(index);
+                                getPermissionById(id);
+                                parent.getTable();
+                            });
+
+                    } else {
+                        layer.msg(data.message, {
+                            anim: 6
+                        })
+                    }
+                }
+            })
+            return false;
+
+        });
+
+    });
+
+</script>
+</body>
+
+</html>

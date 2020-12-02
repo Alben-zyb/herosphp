@@ -1,0 +1,97 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 29,
+  "data": [
+    {
+      "id": 1,
+      "departmentNo": "A",
+      "departmentName": "产品部",
+      "positionNo": "A2",
+      "positionName": "产品检测员",
+      "create_time": "2020-03-11 11:12:00",
+      "update_time": "2020-03-11 11:12:00",
+      "members": 2
+    },
+    {
+      "id": 2,
+      "departmentNo": "B",
+      "departmentName": "设计部",
+      "positionNo": "B1",
+      "positionName": "设计师",
+      "create_time": "2020-03-11 11:12:00",
+      "update_time": "2020-03-11 11:12:00",
+      "members": 1
+    },
+    {
+      "id": 3,
+      "departmentNo": "B",
+      "departmentName": "设计部",
+      "positionNo": "B2",
+      "positionName": "设计师助理",
+      "create_time": "2020-03-11 11:12:00",
+      "update_time": "2020-03-11 11:12:00",
+      "members": 2
+    },
+    {
+      "id": 4,
+      "departmentNo": "D",
+      "departmentName": "售后部",
+      "positionNo": "D2",
+      "positionName": "客服",
+      "create_time": "2020-03-11 11:12:00",
+      "update_time": "2020-03-11 11:12:00",
+      "members": 2
+    },
+    {
+      "id": 5,
+      "departmentNo": "E",
+      "departmentName": "财务部",
+      "positionNo": "E1",
+      "positionName": "会计师",
+      "create_time": "2020-03-11 11:12:00",
+      "update_time": "2020-03-11 11:12:00",
+      "members": 1
+    },
+    {
+      "id": 6,
+      "departmentNo": "F",
+      "departmentName": "销售部",
+      "positionNo": "F2",
+      "positionName": "销售助理",
+      "create_time": "2020-03-11 11:12:00",
+      "update_time": "2020-03-11 11:12:00",
+      "members": 2
+    },
+    {
+      "id": 7,
+      "departmentNo": "D",
+      "departmentName": "售后部",
+      "positionNo": "D3",
+      "positionName": "仓库管理员",
+      "create_time": "2020-03-11 11:12:00",
+      "update_time": "2020-03-11 11:12:00",
+      "members": 1
+    },
+    {
+      "id": 8,
+      "departmentNo": "E",
+      "departmentName": "财务部",
+      "positionNo": "E3",
+      "positionName": "财务总监",
+      "create_time": "2020-03-11 11:12:00",
+      "update_time": "2020-03-11 11:12:00",
+      "members": 1
+    },
+    {
+      "id": 9,
+      "departmentNo": "F",
+      "departmentName": "销售部",
+      "positionNo": "F1",
+      "positionName": "销售经理",
+      "create_time": "2020-03-11 11:12:00",
+      "update_time": "2020-03-11 11:12:00",
+      "members": 1
+    }
+  ]
+}

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/static/admin/index/css/font.css">
+    <link rel="stylesheet" href="/static/admin/index/css/xadmin.css">
+    <script type="text/javascript" src="/static/public/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/admin/index/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form action="" method="post" class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <!--角色id-->
+                <input type="hidden" id="id" name="id">
+                <label for="roleName" class="layui-form-label">
+                    <span class="x-red">*</span>角色名称
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="roleName" name="roleName" required="" lay-verify="roleName"
+                           autocomplete="off" class="layui-input" placeholder="请输入角色名称">
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+                <label for="detail" class="layui-form-label">
+                    <span class="x-red">*</span>角色描述
+                </label>
+                <div class="layui-input-block">
+                    <input rows="2" placeholder="请输入描述内容" id="detail" name="detail" required="" lay-verify="required"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">
+                    拥有权限
+                </label>
+                <table class="layui-table layui-input-block">
+                    <!--权限列表:begin-->
+                    <tbody id="permissionList">
+                    <!--<tr>
+                        <td>
+                            <input type="checkbox" name="like1[write]" lay-skin="primary" lay-filter="father"
+                                   title="用户管理">
+                        </td>
+                        <td>
+                            <table class="layui-table layui-input-block">
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="like1[write]" lay-skin="primary"
+                                               lay-filter="father"
+                                               title="用户管理">
+                                    </td>
+                                    <td>
+                                        <div class="layui-input-block">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="用户停用">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="用户删除">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="用户修改">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="用户改密">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="用户列表">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="用户改密">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="用户列表">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="用户改密">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="用户列表">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+
+                                        <input name="id[]" lay-skin="primary" type="checkbox" value="2" title="文章管理"
+                                               lay-filter="father">
+                                    </td>
+                                    <td>
+                                        <div class="layui-input-block">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="文章添加">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="文章删除">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="文章修改">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="文章改密">
+                                            <input name="id[]" lay-skin="primary" type="checkbox" value="2"
+                                                   title="文章列表">
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>-->
+                    </tbody>
+                    <!--权限列表:end-->
+                </table>
+            </div>
+
+            <div class="layui-form-item">
+                <button class="layui-btn" lay-submit="" lay-filter="update">更新</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    //接收后端传来的参数
+    var API_URL = '{$API_URL}';//统一资源路径
+    var id = {$id};
+    var roleName = '{$roleName}';
+    var detail = '{$detail}';
+
+    init();
+
+    //初始化权限数据
+    function init() {
+        $('#id').val(id); //设置id
+        $('#roleName').val(roleName); //设置roleName
+        $('#detail').val(detail); //设置detail
+
+        getPermission();//获取权限列表
+    }
+
+    //获取所有权限
+    function getPermission() {
+        $.ajax({
+            url: API_URL + 'getPermission',
+            type: 'get',
+            dataType: 'json',
+            data: '',
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.data);
+                    $('#permissionList tr').remove();//清空权限列表
+
+                    //构建权利列表表格
+                    $.each(data.data, function (index, module) {
+                        //第一层循环：模块
+                        var m_tr = $('<tr></tr>');
+                        var m_td1 = $('<td><div class="layui-input-block"><input type="checkbox" lay-skin="primary" lay-filter="father" title="' + index + '"></div></td>');
+                        var m_td2 = $('<td></td>');
+                        var m_table = $('<table class="layui-table layui-input-block"></table>');
+                        var m_tbody = $('<tbody></tbody>');
+                        $.each(module, function (index, controller) {
+                            //第二层循环：控制器
+                            var c_tr = $('<tr></tr>');
+                            var c_td1 = $('<td style="width: 100px;"><div class="layui-input-block"><input type="checkbox" lay-skin="primary" lay-filter="father" title="' + index + '"></div></td>');
+                            var c_td2 = $('<td></td>');
+                            var c_div = $('<div class="layui-input-block"></div>');
+                            $.each(controller, function (index, method) {
+                                //第三层循环：方法
+                                var input = $('<input name="permissionIds" lay-skin="primary" type="checkbox" value="' + method.id + '" title="' + method.permissionName + '">');
+                                c_div.append(input);
+                            });
+                            c_td2.append(c_div);
+                            c_tr.append(c_td1);
+                            c_tr.append(c_td2);
+                            m_tbody.append(c_tr);
+                            m_table.append(m_tbody);
+                        });
+                        m_td2.append(m_table);
+                        m_tr.append(m_td1);
+                        m_tr.append(m_td2);
+                        $("#permissionList").append(m_tr);
+                    });
+
+                    //获取角色拥有的权限，并设置选中
+                    $.ajax({
+                        url: API_URL + 'getRolePermission',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {id: id},//角色id
+                        success: function (data) {
+                            //console.log(data.data);
+                            if (data.code == '000') {
+                                var permissions = data.data;
+                                $.each(permissions, function (index, permission) {
+                                    $("#permissionList input[name='permissionIds'][value='" + permission['permissionId'] + "']").attr('checked', 'checked');
+                                });
+                                //layui的checkbox选项动态添加数据后，需要初始化容器，否则数据可能显示不出来
+                                layui.use(['form'], function () {
+                                    layui.form.render('checkbox');
+                                });
+                            } else {
+                                layer.msg(data.message, {
+                                    anim: 6
+                                })
+                            }
+                        }
+                    })
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    layui.use(['form', 'layer'], function () {
+        $ = layui.jquery;
+        var form = layui.form
+            , layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            roleName: function (value) {
+                var rep = /(^[\u4E00-\u9FA5]{1,10}[a-zA-Z1-9]{0,10}$)|(^[A-Z][a-zA-Z1-9]{1,30}$)/;
+                if (!rep.test(value)) {
+                    return '角色名称为中文或英文(末尾可添加字母或数字)';
+                }
+            },
+        });
+
+        //监听提交
+        form.on('submit(update)', function (data) {
+            var roleData = data.field; //表单字段
+            var checkList = []; //存放选中的权限的id
+
+            //循环遍历已选中的权限
+            $("#permissionList input[name='permissionIds']:checked").each(function () {
+                checkList.push($(this).val())
+            })
+            roleData['permissionIds'] = checkList; //将表单中name=permissionIds的字段赋值为数组(id数组)
+
+            console.log(roleData);
+
+            //发异步，把数据提交给php
+            $.ajax({
+                url: API_URL + 'updateData',
+                type: 'post',
+                dataType: 'json',
+                data: roleData,
+                success: function (data) {
+                    console.log(data);
+                    if (data.code == '000') {
+                        layer.msg(data.message,
+                            {
+                                icon: 6,
+                                time: 2000,
+                                closeBtn: true,
+                            }, function () {
+                                // 获得frame索引
+                                //var index = parent.layer.getFrameIndex(window.name);
+                                //关闭当前frame
+                                //parent.layer.close(index);
+                                parent.refresh();
+                            });
+
+                    } else {
+                        layer.msg(data.message, {
+                            anim: 6
+                        })
+                    }
+                },
+                error: function (data) {
+                    layer.msg(data.responseText, {
+                        anim: 6
+                    })
+                }
+            })
+            return false;
+        });
+
+
+        //权限全选控制
+        form.on('checkbox(father)', function (data) {
+            if (data.elem.checked) {
+                $(data.elem).parent().parent().siblings('td').find('input').prop("checked", true);
+                form.render();
+            } else {
+                $(data.elem).parent().parent().siblings('td').find('input').prop("checked", false);
+                form.render();
+            }
+        });
+
+
+    });
+</script>
+</body>
+
+</html>

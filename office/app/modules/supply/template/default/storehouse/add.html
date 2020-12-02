@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/static/admin/index/css/font.css">
+    <link rel="stylesheet" href="/static/admin/index/css/xadmin.css">
+    <script type="text/javascript" src="/static/public/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/admin/index/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]--></head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+            <!--物品分类-->
+            <div class="layui-form-item">
+                <label for="category" class="layui-form-label"><span class="x-red">*</span>物品分类</label>
+                <div class="layui-input-inline">
+                    <select id="category" name="category" lay-filter="category" lay-verify="category"
+                            lay-search>
+                        <option value="">请选择分类</option>
+                    </select>
+                </div>
+            </div>
+
+            <!--物品编号-->
+            <div class="layui-form-item">
+                <label for="goodsNo" class="layui-form-label">
+                    <span class="x-red"></span>物品编号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="goodsNo" name="goodsNo" class="layui-input" readonly="readonly"
+                           disabled="disabled">
+                </div>
+            </div>
+
+            <!--物品名称-->
+            <div class="layui-form-item">
+                <label for="goodsName" class="layui-form-label">
+                    <span class="x-red">*</span>物品名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="goodsName" name="goodsName" class="layui-input" lay-verify="goodsName">
+                </div>
+
+            </div>
+            <!--物品单位-->
+            <div class="layui-form-item">
+                <label for="unit" class="layui-form-label"><span class="x-red">*</span>物品单位</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="unit" name="unit" class="layui-input" lay-verify="unit">
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+
+    //获取后台传来的参数
+    var apiUrl = '{$apiUrl}';  //定义统一资源路径
+
+
+    getCategory();
+    //获取分类并初始化选中状态
+    function getCategory(category) {
+        $.ajax({
+            url: apiUrl + 'getCategory',
+            type: 'get',
+            dataType: 'json',
+            data: '',
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $("#category option").not(":first").remove();
+                    //$("#category option").remove();
+                    $.each(data.data, function (index, value) {
+                        $("#category").append("<option value='" + value.id + "'>" + value.categoryNo + '--' + value.categoryName + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    $('#category').val(category);//初始化选中
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+    //根据分类获取新的物品编号
+    function getNewGoodsNo(category) {
+        $.ajax({
+            url: apiUrl + 'getNewGoodsNo',
+            type: 'get',
+            dataType: 'json',
+            data: {category:category},
+            success: function (data) {
+                if (data.code == '000') {
+                    $('#goodsNo').val(data.data);
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    layui.use(['layer', 'form'], function () {
+        var $ = layui.jquery,
+            layer=layui.layer,
+            form = layui.form;
+
+        //监听分类下拉框
+        form.on('select(category)', function (data) {
+            var category = data.value; //得到被选中的值
+            if(category){
+                //构造新的物品编号
+                getNewGoodsNo(category);
+            }else {
+                $('#goodsNo').val('');
+            }
+        });
+
+        //自定义验证规则
+        form.verify({
+            category: function (value) {
+                if (value == '' || value == 0) {
+                    return '未选择分类';
+                }
+            },
+            goodsName: function (value) {
+                if (value == '' || value == 0) {
+                    return '物品名称不能为空';
+                }
+            },
+            unit: function (value) {
+                if (value == '' || value == 0) {
+                    return '未选择单位';
+                }
+            },
+
+
+        });
+
+        //监听提交
+        form.on('submit(add)', function (data) {
+            var field = data.field;//添加表单字段
+            console.log(field)
+            $.ajax({
+                url: apiUrl + 'addData',
+                type: 'post',
+                dataType: 'json',
+                data: field,
+                success: function (data) {
+                    if (data.code == '000') {
+                        layer.msg("添加成功",
+                            {
+                                icon: 6,
+                                time: 2000,
+                                closeBtn: true,
+                            }, function () {
+                                // 获得frame索引
+                                //var index = parent.layer.getFrameIndex(window.name);
+                                //关闭当前frame
+                                //parent.layer.close(index);
+                                parent.getData();
+                            });
+
+                    } else {
+                        layer.msg(data.message, {
+                            anim: 6
+                        })
+                    }
+                }
+            })
+            return false;
+
+        });
+
+    });
+
+</script>
+</body>
+
+</html>

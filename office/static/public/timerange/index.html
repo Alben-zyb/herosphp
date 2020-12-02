@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>jQuery左右滑动效果选取数值</title>
+
+<style type="text/css">
+.demo{width:350px; margin:100px auto 10px auto}
+#g1,#g2{margin-top:50px}
+</style>
+
+<link rel="stylesheet" href="css/jquery.range.css">
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.range.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('.range-slider').jRange({
+		from: 480, to: 1440, step:10,
+		scale: ['08:00','12:00','16:00','20:00','24:00'],
+		format: '%s',
+		width: 600,
+		showLabels: true,
+		theme:'theme-blue',
+		isRange : true
+	});
+
+	$("#g1").click(function(){
+		var aa = $('.pointer-label').text();
+		var start=aa.substr(0,5);
+		var finish=aa.substr(5);
+		console.log('start:'+start);
+		console.log('finish:'+finish);
+	});
+	$("#g2").click(function(){
+		var aa = $(".range-slider").val();
+		alert(aa);
+	});
+});
+</script>
+
+</head>
+
+<body>
+
+<div class="demo">
+	<input class="range-slider" type="hidden" value="700,900"/>
+	<button id="g1">获取时间值</button>
+	<button id="g2">获取位置值</button>
+</div>
+
+</body>
+</html>

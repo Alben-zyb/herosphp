@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>注册</title>
+    <link type="text/css" rel="stylesheet" href="css/register.css"/>
+    <link type="text/css" rel="stylesheet" href="../public/layui/css/layui.css"/>
+    <script type="text/javascript" src="../public/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../public/layui/layui.js"></script>
+    <script type="text/javascript" src="js/register.js"></script>
+
+</head>
+
+<body>
+
+<div class="main">
+    <div class="main0">
+        <div class="main_left">
+            <img src="images/zhuce-image-3.png" class="theimg"/>
+            <img src="images/zhuce-image-2.png" class="secimg"/>
+            <img src="images/zhuce-image-1.png" class="firimg"/>
+        </div>
+        <div class="main_right">
+            <form class="layui-form" action="">
+                <div class="main_r_up">
+                    <img src="images/user.png"/>
+                    <div class="pp">注册</div>
+                </div>
+                <div class="sub"><p>已经注册？<a href="login.html"><span class="blue">请登录</span></a></p></div>
+                <div class="txt ">
+                    <span style="letter-spacing:10px;">手机号:</span>
+                    <input name="" type="text" class="txtphone" placeholder="请输入手机号码"/>
+                </div>
+                <div class="txt ">
+                    <span style="letter-spacing:19px;">工号:</span>
+                    <input name="" type="text" class="txtphone" placeholder="请输入工号"/>
+                </div>
+                <div class="txt ">
+                    <span style="letter-spacing:19px;">姓名:</span>
+                    <input name="" type="text" class="txtphone" placeholder="请输入姓名"/>
+                </div>
+                <div class="layui-form-item" style="width:456px; height:30px; margin-top:12px">
+                    <span style="letter-spacing:19px;">部门:</span>
+                    <div class="layui-input-block" style="width: 252px;">
+                        <select name="modules" lay-verify="required" lay-search="" >
+                            <option value="">直接选择或搜索选择</option>
+                            <option value="1">layer</option>
+                            <option value="2">form</option>
+                            <option value="3">layim</option>
+                            <option value="4">element</option>
+                            <option value="5">laytpl</option>
+                            <option value="6">upload</option>
+                            <option value="7">laydate</option>
+                            <option value="8">laypage</option>
+                            <option value="9">flow</option>
+                            <option value="10">util</option>
+                            <option value="11">code</option>
+                            <option value="12">tree</option>
+                            <option value="13">layedit</option>
+                            <option value="14">nav</option>
+                            <option value="15">tab</option>
+                            <option value="16">table</option>
+                            <option value="17">select</option>
+                            <option value="18">checkbox</option>
+                            <option value="19">switch</option>
+                            <option value="20">radio</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="width:456px; height:30px; margin-top:12px">
+                    <span style="letter-spacing:19px;">岗位:</span>
+                    <div class="layui-input-block" style="width: 252px;">
+                        <select name="position" lay-verify="required" lay-search="" >
+                            <option value="">直接选择或搜索选择</option>
+                            <option value="1">layer</option>
+                            <option value="2">form</option>
+                            <option value="3">layim</option>
+                            <option value="4">element</option>
+                            <option value="5">laytpl</option>
+                            <option value="6">upload</option>
+                            <option value="7">laydate</option>
+                            <option value="8">laypage</option>
+                            <option value="9">flow</option>
+                            <option value="10">util</option>
+                            <option value="11">code</option>
+                            <option value="12">tree</option>
+                            <option value="13">layedit</option>
+                            <option value="14">nav</option>
+                            <option value="15">tab</option>
+                            <option value="16">table</option>
+                            <option value="17">select</option>
+                            <option value="18">checkbox</option>
+                            <option value="19">switch</option>
+                            <option value="20">radio</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="txt ">
+                    <span>短信验证码:</span>
+                    <input name="" type="text" placeholder="请输入短信验证码" class="txtyzmdx"/>
+                    <a href="javascript:;" class="tipTimer" onClick="settime(this)">获取短信验证码</a>
+                </div>
+
+                <div class="txt ">
+                    <span style="letter-spacing:4px;">登录密码:</span>
+                    <input name="" type="text" class="txtphone" placeholder="请输入密码"/>
+                </div>
+                <div class="txt ">
+                    <span style="letter-spacing:4px;">重复密码:</span>
+                    <input name="" type="text" class="txtphone" placeholder="请再次输入密码"/>
+                </div>
+                <div class="txt ">
+                    <a href="register_1.html"><span class="layui-icon" style=" float:left;color:#31acfb">&#xe65c;返回上一步</span></a>
+                    <a href="registerSucc.html">
+                        <div class="zhucebtn">确认注册</div>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="footer0">
+        <div class="footer_l">使用条款 | 隐私保护</div>
+        <div class="footer_r">© 2020 盟大塑化科技有限公司</div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var height = $(document).height();
+        $('.main').css('height', height);
+    })
+    layui.use(['form'], function () {
+        layui.form.render('select');
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎页面-X-admin2.2</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/static/admin/index/css/font.css">
+    <link rel="stylesheet" href="/static/admin/index/css/xadmin.css">
+    <script type="text/javascript" src="/static/public/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/admin/index/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]--></head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+            <!--隐藏的会议室id-->
+            <input type="hidden" name="id" id="id">
+            <!--会议室编号-->
+            <div class="layui-form-item">
+                <label for="roomNo" class="layui-form-label">
+                    <span class="x-red">*</span>会议室编号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="roomNo" name="roomNo" required="" placeholder="请输入会议室编号(如:A1)"
+                           lay-verify="roomNo" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <!--会议室名称-->
+            <div class="layui-form-item">
+                <label for="roomName" class="layui-form-label">
+                    <span class="x-red">*</span>会议室名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="roomName" name="roomName" required="" placeholder="请输入会议室名称"
+                           lay-verify="roomName" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+
+            <!--设备情况-->
+            <div class="layui-form-item">
+                <label for="device" class="layui-form-label">
+                    <span class="x-red">*</span>设备情况</label>
+                <div class="layui-input-inline" style="width: 300px;">
+                    <input type="text" id="device" name="device" required placeholder="请输入会议室设备情况"
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+
+            <!--容纳人数-->
+            <div class="layui-form-item">
+                <label for="capacity" class="layui-form-label">
+                    <span class="x-red">*</span>容纳人数</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="capacity" name="capacity" required="" placeholder="请输入会议室容纳人数"
+                           lay-verify="capacity" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <button class="layui-btn" lay-filter="edit" lay-submit="">确认修改</button>
+                <a class="layui-btn" id="reset">重置</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="/static/public/layui/import.js"></script>
+<script>
+
+    //获取后台传来的参数
+
+    var apiUrl = '{$apiUrl}';//定义统一资源路径
+    var id = '{$id}'; //用户id
+    var entity=''; //存放会议室实体数据
+
+    $(function () {
+        //获取会议室实体信息，渲染页面
+        getEntityById(id);
+
+        //重置
+        $('#reset').on('click', function () {
+            setForm(entity);
+        })
+    })
+
+    //设置form表单初始值
+    function setForm(entity) {
+        //设置初始表单
+        $('#id').val(entity.id);
+        $('#roomNo').val(entity.roomNo);
+        $('#roomName').val(entity.roomName);
+        $('#device').val(entity.device);
+        $('#capacity').val(entity.capacity);
+    }
+
+    //根据id获取用户详细信息，渲染初始表单
+    function getEntityById(id) {
+        $.ajax({
+            url: apiUrl + 'getEntityById',
+            type: 'post',
+            dataType: 'json',
+            data: {'id': id},
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.data);
+                    entity = data.data;
+                    //设置初始表单
+                    setForm(entity);
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        });
+    }
+
+    layui.use(['layer', 'form', 'treeSelect'], function () {
+        var form = layui.form,
+            $ = layui.jquery;
+
+        //自定义验证规则
+        form.verify({
+            //会议室编号
+            roomNo: function (value) {
+                var rep = /(^[a-zA-Z][1-9]$)/;
+                if (!rep.test(value)) {
+                    return '必须为一位字母加1位数字';
+                }
+            },
+            //会议室名称
+            roomName: function (value) {
+                var rep = /(^[\u4E00-\u9FA5]{1,10}$)|(^[\u4E00-\u9FA5]{1,10}[a-zA-Z0-9]{1,10}$)|(^[A-Z][a-zA-Z]{1,30}$)/;
+                if (!rep.test(value)) {
+                    return '必须为中文名字或英文名字(大写字母开头)';
+                }
+            },
+
+            //会议室容纳人数
+            capacity: function (value) {
+                var rep = /^\d{1,4}$/;
+                if (!rep.test(value)) {
+                    return '必须为数字';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(edit)', function (data) {
+            console.log(data.field);
+            $.ajax({
+                url: apiUrl + 'editSubmit',
+                type: 'post',
+                dataType: 'json',
+                data: data.field,
+                success: function (data) {
+                    console.log(data.message);
+                    if (data.code == '000') {
+                        layer.msg("修改成功",
+                            {
+                                icon: 6,
+                                time: 2000,
+                                closeBtn: true,
+                            }, function () {
+                                // 获得frame索引
+                                //var index = parent.layer.getFrameIndex(window.name);
+                                //关闭当前frame
+                                //parent.layer.close(index);
+                                getEntityById(id);
+                                parent.refresh();
+                            });
+
+                    } else {
+                        layer.msg(data.message, {
+                            anim: 6
+                        })
+                    }
+                }
+            })
+            return false;
+
+        });
+
+    });
+
+</script>
+</body>
+
+</html>

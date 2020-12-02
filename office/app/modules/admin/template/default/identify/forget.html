@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>忘记密码</title>
+    <link type="text/css" rel="stylesheet" href="/static/admin/identify/css/password.css"/>
+    <link type="text/css" rel="stylesheet" href="/static/public/layui/css/layui.css"/>
+    <script type="text/javascript" src="/static/public/layui/layui.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/public/js/jsencrypt.min.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.cookie.js"></script>
+
+
+</head>
+
+<body>
+<div class="main">
+    <div class="main0">
+        <div class="content">
+            <form class="layui-form" action="">
+                <!--后端传过来的公钥-->
+                <input id="public_key" type="hidden" value="{$public_key}">
+                <!--第一步-->
+                <div class="formBox">
+                    <h3>登录密码重置</h3>
+                    <ul>
+                        <li class="mainCol firLi">&gt;身份验证</li>
+                        <li>&gt;登录密码重置</li>
+                        <li class="lastLi">&gt;重置完成</li>
+                    </ul>
+                    <div class="processLine_1"></div>
+                    <div class="itembox">
+                        <label>手机号码&nbsp;:</label>
+                        <input type="text" name="phone" id="phone" placeholder="请输入注册手机号"></span>
+                    </div>
+                    <div class="btnBox">
+                        <input type="button" class="layui-btn layui-btn-normal" value="返回登录" onclick="toLogin();">
+                        <input type="button" class="layui-btn layui-btn-normal" value="下一步" onclick="secondStep();">
+                    </div>
+                </div>
+                <!--第二步-->
+                <div class="formBox">
+                    <h3>登录密码重置</h3>
+                    <ul>
+                        <li class="mainCol firLi">&gt;身份验证</li>
+                        <li class="mainCol">&gt;登录密码重置</li>
+                        <li class="lastLi">&gt;重置完成</li>
+                    </ul>
+                    <div class="processLine_2"></div>
+
+                    <div class="itembox itembox_2">
+                        <label>短信验证码 &nbsp;:</label>
+                        <input type="text" placeholder="请输入手机验证码" autocomplete="off" class="phoneCode" lay-verify="required" name="phoneCode" >
+                        <input type="button" id="getCaptcha" class="getCaptcha" onClick="getPhoneCode(this)"
+                               value="获取短信验证码" style="float: left">
+                    </div>
+                    <div class="itembox itembox_2">
+                        <label>登录密码&nbsp;:</label>
+                        <input type="password" id="password" name="password" placeholder="请输入新登录密码" lay-verify="password"></span>
+                    </div>
+                    <div class="itembox itembox_2">
+                        <label>确认密码&nbsp;:</label>
+                        <input type="password" id="confirmPassword" lay-verify="confirmPassword" placeholder="请再次输入新密码"></span>
+                    </div>
+                    <div class="btnBox">
+                        <input type="button" class="layui-btn layui-btn-normal" value="上一步" onclick="firstStep();">
+                        <input type="button" class="layui-btn layui-btn-normal" value="下一步" lay-filter="resetPassword" lay-submit="">
+                    </div>
+                </div>
+
+                <!--第三步-->
+                <div class="formBox">
+                    <h3>登录密码重置</h3>
+                    <ul>
+                        <li class="mainCol firLi">&gt;身份验证</li>
+                        <li class="mainCol">&gt;登录密码重置</li>
+                        <li class="mainCol lastLi">&gt;重置完成</li>
+                    </ul>
+                    <div class="processLine_3"></div>
+
+                    <p class="sub"><span>-^0^-</span> 新登录密码重置成功，请重新登录!</p>
+                    <div class="btnBox_2">
+                        <input type="button" class="layui-btn layui-btn-normal" value="重新登录" onclick="toLogin();">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="footer">
+    <div class="footer0">
+        <div class="footer_l">使用条款 | 隐私保护</div>
+        <div class="footer_r">© 2020 盟大塑化科技有限公司</div>
+
+    </div>
+</div>
+<script>
+    //后端传来的参数
+    var checkUserPhone_url = '{$checkUserPhone_url}';
+    var toLogin_url = '{$toLogin_url}';
+    var phoneCode_url = '{$phoneCode_url}';
+    var resetPassword_url = '{$resetPassword_url}';
+
+    //使用layer弹出层
+    layui.use(['layer', 'form'], function () {
+        var $ = layui.jquery,
+            form = layui.form;
+
+        $('body').removeClass('layui-hide');//移除有hide属性的类
+
+
+        //自定义验证规则
+        form.verify({
+            password: function (value) {
+                if (value.length<6) {
+                    return '密码长度过短';
+                }
+            },
+            confirmPassword: function (value) {
+                var password=$('#password').val();
+                if (password!==value) {
+                    return '密码前后不一致';
+                }
+            },
+        });
+
+        //监听提交
+        form.on('submit(resetPassword)', function (data) {
+            var field = data.field;//添加表单字段(这是引用赋值)
+            var remember = new Object();
+            remember['remember']=true;
+            remember['phone']=field['phone'];
+            remember['password']=field['password'];
+            console.log(remember);
+            var public_key = $('#public_key').val(); //获取公钥
+
+            field['phone'] = encryptPublic(field['phone'], public_key); //手机号rsa加密传输
+            field['password'] = encryptPublic(field['password'], public_key); //密码rsa加密传输
+            $.ajax({
+                url: resetPassword_url,
+                type: 'post',
+                dataType: 'json',
+                data: field,
+                success: function (data) {
+                    if (data.code == '000') {
+                        rememberLogin(remember);
+                        thirdStep();
+                        layer.msg("重置成功",
+                            {
+                                icon: 6,
+                                time: 2000,
+                                closeBtn: true,
+                            });
+
+                    } else {
+                        layer.msg(data.message, {
+                            anim: 6
+                        })
+                    }
+                }
+            })
+            return false;
+
+        });
+
+
+    });
+
+    function firstStep() {
+        $('.content').css('top', '0px');
+        return false;
+    }
+
+    function secondStep() {
+        if (!phoneCheck()) {
+            return false;
+        }
+        checkUserPhone();
+    }
+
+    function thirdStep() {
+        $('.content').css('top', '-1040px');
+    }
+
+    function toLogin() {
+        window.location = '{$toLogin_url}';
+    }
+
+    function checkUserPhone() {
+        var phone = $('#phone').val();
+        $.ajax({
+            url: checkUserPhone_url,
+            type: 'post',
+            data: {'phone': phone},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code == '000') {
+                    $('.content').css('top', '-520px');
+                } else {
+                    layui.layer.msg(data.message, {
+                        anim: 6,
+                        time: 2000
+                    });
+                }
+            }
+        })
+    }
+
+
+</script>
+<script src="/static/admin/identify/js/script.js"></script>
+</body>
+</html>

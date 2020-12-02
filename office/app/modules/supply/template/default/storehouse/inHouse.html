@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/static/admin/index/css/font.css">
+    <link rel="stylesheet" href="/static/admin/index/css/xadmin.css">
+    <script type="text/javascript" src="/static/public/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/admin/index/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        .layui-form-select dl { max-height:200px; }
+    </style>
+</head>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-row">
+        <!--物品基本信息-->
+        <div class="layui-col-sm6">
+            <form class="layui-form">
+
+                <!--物品编号-->
+                <div class="layui-form-item">
+                    <label for="goodsNo" class="layui-form-label">物品编号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="goodsNo" name="goodsNo" class="layui-input" readonly="readonly"
+                               disabled="disabled">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux" id="oldGoodNo"></div>
+                </div>
+                <!--物品名称-->
+                <div class="layui-form-item">
+                    <label for="goodsName" class="layui-form-label">物品名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="goodsName" name="goodsName" class="layui-input" readonly="readonly"
+                               disabled="disabled">
+                    </div>
+
+                </div>
+                <!--物品单位-->
+                <div class="layui-form-item">
+                    <label for="unit" class="layui-form-label">物品单位</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="unit" name="unit" class="layui-input" readonly="readonly"
+                               disabled="disabled">
+                    </div>
+                </div>
+                <!--物品分类-->
+                <div class="layui-form-item">
+                    <label for="category" class="layui-form-label">物品分类</label>
+                    <div class="layui-input-inline">
+                        <select id="category" name="category" lay-filter="category" disabled="disabled"></select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--采购信息-->
+        <div class="layui-col-sm6">
+            <form class="layui-form">
+                <!--隐藏物品id-->
+                <input type="hidden" id="goodsId" name="goodsId">
+                <!--采购员-->
+                <div class="layui-form-item">
+                    <label for="handler" class="layui-form-label">
+                        <span class="x-red">*</span>采购员</label>
+                    <div class="layui-input-inline">
+                        <select id="handler" name="handler" lay-verify="handler" lay-search style="height: 200px">
+                            <option value="">搜索选择采购员</option>
+                        </select>
+                    </div>
+                </div>
+                <!--进货数量-->
+                <div class="layui-form-item">
+                    <label for="number" class="layui-form-label"><span class="x-red">*</span>进货数量</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="number" name="number" class="layui-input" lay-verify="number" autocomplete="off">
+                    </div>
+                </div>
+                <!--进货商-->
+                <div class="layui-form-item">
+                    <label for="supplier" class="layui-form-label"><span class="x-red">*</span>进货商</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="supplier" name="supplier" class="layui-input" lay-verify="supplier" autocomplete="off">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"></label>
+                    <button class="layui-btn" lay-filter="add" lay-submit="">提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<script src="/static/public/layui/import.js"></script>
+<script>
+
+    //获取后台传来的参数
+
+    var apiUrl = '{$apiUrl}';  //定义统一资源路径
+    var inoutHouseUrl = '{$inHouseUrl}';  //入库路径
+    var id = '{$id}'; //物品id
+    var goods = new Array(); //存放原始数据
+    $(function () {
+        //获取物品信息，渲染页面
+        initData(id);
+        getHandler(); //初始化经手人下拉选择
+    })
+
+    //根据id获取权限详细信息，渲染初始表单
+    function initData(id) {
+        $.ajax({
+            url: apiUrl + 'getDataById',
+            type: 'post',
+            dataType: 'json',
+            data: {'id': id},
+            success: function (data) {
+                if (data.code == '000') {
+                    goods = data.data;
+                    //设置初始表单
+                    $('#goodsId').val(goods.id);
+                    $('#goodsNo').val(goods.goodsNo); //物品编号
+                    $('#goodsName').val(goods.goodsName); //物品名称
+                    $('#unit').val(goods.unit); //物品单位
+                    //初始化分类下拉框的选中状态
+                    getCategory(goods.category);
+
+                } else {
+                    layer.msg(goods.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    //获取分类并初始化选中状态
+    function getCategory(category) {
+        $.ajax({
+            url: apiUrl + 'getCategory',
+            type: 'get',
+            dataType: 'json',
+            data: '',
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    // $("#category option").not(":first").remove();
+                    $("#category option").remove();
+                    $.each(data.data, function (index, value) {
+                        $("#category").append("<option value='" + value.id + "'>" + value.categoryNo + '--' + value.categoryName + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    $('#category').val(category);//初始化选中
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    //获取用户信息,下拉选择采购员
+    function getHandler() {
+        $.ajax({
+            url: apiUrl + 'getUserList',
+            type: 'get',
+            dataType: 'json',
+            data: '',
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $("#handler option").not(":first").remove();
+                    //$("#handler option").remove();
+                    $.each(data.data, function (index, value) {
+                        $("#handler").append("<option value='" + value.id + "'>" + value.userNo + '--' + value.username + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                        layui.form.render();
+                    });
+
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+
+    layui.use(['layer', 'form'], function () {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            form = layui.form;
+
+        //自定义验证规则
+        form.verify({
+            handler: function (value) {
+                if (value == '' || value == 0) {
+                    return '采购员不能为空';
+                }
+            },
+            supplier: function (value) {
+                if (value == '' || value == 0) {
+                    return '进货商不能为空';
+                }
+            },
+
+        });
+
+
+        //监听提交
+        form.on('submit(add)', function (data) {
+            var field = data.field;//添加表单字段
+            field['operate']='1'; //添加操作标记字段,1:入库,0:出库
+            console.log(field);
+            $.ajax({
+                url: inoutHouseUrl + 'inHouseSubmit',
+                type: 'post',
+                dataType: 'json',
+                data: field,
+                success: function (data) {
+                    if (data.code == '000') {
+                        layer.msg("入库成功",
+                            {
+                                icon: 6,
+                                time: 2000,
+                                closeBtn: true,
+                            }, function () {
+                                // 获得frame索引
+                                //var index = parent.layer.getFrameIndex(window.name);
+                                //关闭当前frame
+                                //parent.layer.close(index);
+                                initData(id);
+                                parent.getData();
+                            });
+
+                    } else {
+                        layer.msg(data.message, {
+                            anim: 6
+                        })
+                    }
+                }
+            })
+            return false;
+
+        });
+
+    });
+
+</script>
+</body>
+
+</html>

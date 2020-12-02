@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/static/admin/index/css/font.css">
+    <link rel="stylesheet" href="/static/admin/index/css/xadmin.css">
+    <script src="/static/public/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/admin/index/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        #tbBar .layui-btn {
+            margin: 0px;
+        }
+    </style>
+</head>
+<body>
+<div class="x-nav">
+    <span class="layui-breadcrumb">
+      <a href="">首页</a>
+      <a href="">办公用品管理</a>
+      <a><cite>仓库</cite></a>
+    </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+       onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+
+                <!--物品搜索功能：begin-->
+                <div class="" style="padding: 10px 15px;">
+                    <form class="layui-form layui-col-space5" id="searchForm">
+
+
+                        <label for="searchGoodsCategory">物品分类</label>
+                        <div class="layui-inline" style="width: 130px;">
+                            <select id="searchGoodsCategory" name="searchGoodsCategory" lay-verify="" lay-search>
+                                <option value="">搜索选择分类</option>
+                            </select>
+                        </div>
+                        <label for="searchGoodsName">物品名称</label>
+                        <div class="layui-inline" style="width: 120px;">
+                            <input type="text" name="searchGoodsName" id="searchGoodsName" placeholder="请输入物品名称"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+
+                        <div class="layui-inline" style="width: 50px">
+                            <input type="text" name="searchNumberMin" id="searchNumberMin"
+                                   placeholder="" autocomplete="off" class="layui-input">
+                        </div>
+                        <label for="searchNumberMax"><span class="iconfont">&#xe697;= </span>物品数量<span
+                                class="iconfont">&#xe697;</span></label>
+                        <div class="layui-inline" style="width: 50px">
+                            <input type="text" name="searchNumberMax" id="searchNumberMax"
+                                   laceholder="" autocomplete="off" class="layui-input">
+                        </div>
+                        <label for="operate">操作</label>
+                        <div class="layui-inline" style="width: 70px;">
+                            <select id="operate" name="operate" lay-verify="" lay-search>
+                                <option value="-1">全部</option>
+                                <option value="1">入库</option>
+                                <option value="0">出库</option>
+                            </select>
+                        </div>
+
+                        <label for="searchHandler">操作人</label>
+                        <div class="layui-inline">
+                            <input type="text" name="searchHandler" id="searchHandler" placeholder="输入操作人"
+                                   autocomplete="off" class="layui-input" style="width: 90px;">
+                        </div>
+                        <div class="layui-inline">
+                            <input class="layui-input dateTime" autocomplete="off" placeholder="输入开始时间" name="start"
+                                   id="start">
+                        </div>
+
+                        <span class="iconfont">&#xe697;=</span>
+                        <div class="layui-inline" style="width: 66px;">
+                            <input type="checkbox" checked="" name="open" id="timeType" lay-skin="switch"
+                                   lay-filter="switchTest"
+                                   lay-text="流水|更新">
+                        </div>
+                        <span class="iconfont">&#xe697;</span>
+                        <div class="layui-inline">
+                            <input class="layui-input dateTime" autocomplete="off" placeholder="输入结束时间" name="end"
+                                   id="end">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <a class="layui-btn" lay-submit="" lay-filter="sreach" title="搜索" id="search"><i
+                                    class="layui-icon">&#xe615;</i></a>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <a class="layui-btn layui-btn-primary" lay-submit="" lay-filter="sreach" title="重置"
+                               id="reset"><i
+                                    class="iconfont">&#xe6aa;</i></a>
+                        </div>
+
+                    </form>
+                </div>
+                <!--物品搜索功能：end-->
+                <!--表格数据：begin-->
+                <script type="text/html" id="toolbarDemo">
+                    <div class="layui-btn-container">
+                        <button class="layui-btn layui-btn-sm" lay-event="add">添加物品<i
+                                class="layui-icon">&#xe654;</i></button>
+                        <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="delete">批量删除<i
+                                class="layui-icon">&#xe640;</i></button>
+                        <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="forceRefresh">刷新<i
+                                class="layui-icon">&#xe669;</i></button>
+                    </div>
+                </script>
+                <table id="goodsLevelTb"></table>
+                <!-- 自定义显示 -->
+                <script type="text/html" id="inoutTpl">
+                    {{#  switch(d.flow_operate){
+                    case '0':
+                    }}
+                    <span style="color: orange">出库</span>
+                    {{#  break;
+                    case '1':
+                    }}
+                    <span style="color: #5FB878">入库</span>
+                    {{#  break;} }}
+                </script>
+
+                <script type="text/html" id="inoutNumberTpl">
+                    {{#  switch(d.flow_operate){
+                    case '0':
+                    }}
+                    <span style="color: orange">-{{d.flow_number}}</span>
+                    {{#  break;
+                    case '1':
+                    }}
+                    <span style="color: #5FB878">{{d.flow_number}}</span>
+                    {{#  break;} }}
+                </script>
+
+                <!-- 表格操作列 -->
+                <script type="text/html" id="tbBar">
+                    {{#if(typeof(d.haveChild)!='undefined'){}}
+                    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="refresh" title="刷新"
+                       style="margin: 0px;"><i
+                            class="layui-icon">&#xe669;</i></a>
+                    <a class="layui-btn layui-btn-xs" lay-event="inHouse" title="入库" style="margin: 0px;"><i
+                            class="layui-icon">&#xe654;</i></a>
+                    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit" title="修改"
+                       style="margin: 0px;"><i
+                            class="layui-icon">&#xe642;</i></a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" title="删除"
+                       style="margin: 0px;"><i class="layui-icon">&#xe640;</i></a>
+                    {{#}}}
+                </script>
+                <div>
+                    <div id="page" style="float: left"></div>
+                    <div id="page2" style="margin-top:10px;margin-left:10px;float: left;">
+                        <a id="curPage" class="layui-btn layui-btn-primary layui-btn-sm">一级分页</a>
+                    </div>
+                </div>
+                <!--表格数据：begin-->
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/public/layui/import.js"></script>
+<script>
+    //接收后端传来的参数
+    //定义统一资源路径
+    var apiUrl = '{$apiUrl}';
+    var inoutHouseUrl = '{$inoutHouseUrl}';  //入库路径
+
+    getCategory();
+
+    //获取所有休假类型
+    function getCategory() {
+        $.ajax({
+            url: apiUrl + 'getCategory',
+            type: 'get',
+            dataType: 'json',
+            data: '',
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $("#searchGoodsCategory option").not(":first").remove();
+                    $.each(data.data, function (index, value) {
+                        $("#searchGoodsCategory").append("<option value='" + value.id + "'>" + value.categoryNo + '--' + value.categoryName + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+    /*===================================显示数据：begin==========================*/
+    //使用layui.define可以暴露layui.use里定义的方法,供外部调用
+    layui.define(['levelTable', 'laypage'], function (exports) {
+        var $ = layui.jquery,
+            laypage = layui.laypage,
+            levelTable = layui.levelTable;
+        var url = apiUrl + 'getData';
+
+        //更换分页组件的对应关系
+        var flag = true;
+
+        //定义分页搜索数据
+        // 创建json对象
+        // 实例化一个对象
+        let condition = new Object(); //查询条件(包含分页)
+
+
+        $('body').removeClass('layui-hide');
+
+        /*==================表格数据初始化：begin=================*/
+        // 渲染表格
+        var level = levelTable.render({
+            elem: '#goodsLevelTb',
+            toolbar: '#toolbarDemo',
+            height: '500',
+            tree: {
+                iconIndex: 2
+            },
+            cols: [
+                [
+                    {
+                        title: '<span style="font-size: 20px;color: lightseagreen;">仓库记录<span>',
+                        align: 'center',
+                        colspan: 17
+                    },
+                ],
+                [
+                    {title: '', colspan: 2},
+                    {field: 'goodsNo', title: '物品编号', rowspan: 2, minWidth: 100},
+                    {field: 'category', title: '物品分类', rowspan: 2, minWidth: 120},
+                    {field: 'goodsName', title: '物品名称', rowspan: 2, minWidth: 100},
+                    {field: 'number', title: '库存数量', rowspan: 2},
+                    {
+                        templet: function (d) {
+                            return '<span style="color: #5FB878">' + d.applyNumber ? d.applyNumber : '' + '</span>'
+                        }, title: '申领数量', rowspan: 2
+                    },
+                    {field: 'unit', title: '计量单位', rowspan: 2},
+                    {field: 'create_time', title: '创建时间', rowspan: 2, minWidth: 138, hide: 'true'},
+                    {field: 'update_time', title: '更新时间', rowspan: 2, minWidth: 138, hide: 'true'},
+                    {title: '入库/出库记录', align: 'center', colspan: 6},
+                    {title: '操作', width: 200, align: 'center', toolbar: '#tbBar', rowspan: 2}
+                ],
+                [
+                    {type: 'numbers', width: 50},
+                    {type: 'checkbox'},
+                    // {field: 'id', title: 'ID'},
+
+                    {templet: '#inoutTpl', title: '入库/出库'},
+                    {field: 'flow_supplier', title: '供应商', minWidth: 140, hide: 'true'},
+                    {templet: '#inoutNumberTpl', title: '流水数量'},
+                    {field: 'flow_handler', title: '操作人'},
+                    {field: 'flow_create_time', title: '流水时间', minWidth: 138},
+                    {field: 'flow_update_time', title: '更新时间', minWidth: 138, hide: 'true'},
+
+                ]],
+            //异步加载
+            reqData: function (data, callback) {  // 懒加载也可以用url方式，这里用reqData方式演示
+                setTimeout(function () {  // 故意延迟一下
+                    if (data) {
+                        url = inoutHouseUrl + 'indexGetInOutHouse'; //入库出库
+                        condition.id = data.id;
+                    }
+                    $.get(url, condition, function (res) {
+                        if(typeof(res)=="string"){
+                            res=new Object();
+                            res.data='';
+                        }
+                        callback(res.data);
+                        curPage();  //更新当前分页组件对应关系
+                        url = apiUrl + 'getData'; //加载完数据,恢复url
+                        condition.count = res.count;
+                        //更新分页组件
+                        if (res.data.length > 0) {
+                            //没数据,不更新分页组件
+                            laypage.render({
+                                elem: 'page',
+                                count: condition.count,
+                                curr: condition.curr,
+                                limit: condition.limit,
+                                layout: ['prev', 'page', 'next', 'skip', 'limit', 'count'],
+                                jump: function (obj, first) {
+                                    if (!first) {
+                                        condition.page = obj.curr;
+                                        condition.limit = obj.limit;
+                                        condition.curr = obj.curr;
+                                        getData();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }, 100);
+            },
+            done: function () {
+                $('.ew-tree-pack').on('click', function () {
+                    setTimeout(curPage, 500); //更新当前分页对应关系(延迟执行,保证执行顺序:展开收起完成后再执行)
+                })
+            },
+            style: 'margin-top:0;'
+        });
+
+        /*==================表格数据初始化：end=================*/
+        // 监听行双击事件
+        levelTable.on('rowDouble(goodsLevelTb)', function (obj) {
+            obj.refresh();  // 刷新(数据模式)
+        });
+
+        //监听表格复选框选择
+        //头工具栏事件
+        levelTable.on('toolbar(goodsLevelTb)', function (obj) {
+            switch (obj.event) {
+                case 'delete':
+                    // 复选框
+                    var checkedData = level.checkStatus(false);  // 获取选中数据(是否是半选会有一个isIndeterminate字段标识)
+                    var deleteIds = new Array();
+                    checkedData.forEach((item) => {
+                        if (typeof (item.id) != 'undefined') {
+                            deleteIds.push(item.id);
+                        }
+                    });
+                    if (deleteIds.length == 0) {
+                        layer.msg('未选中数据', {
+                            time: 3000,
+                            closeBtn: true,
+                            anim: 6
+                        });
+                    } else {
+                        layer.msg('确定删除数据吗(' + checkedData.length + '行)？', {
+                            //icon: 1,
+                            time: 5000,
+                            closeBtn: true,
+                            btn: ['yes', 'no'],
+                            yes: function (index) {
+                                //do something
+                                layer.close(index);
+                                deleteByIds(deleteIds);
+                            }
+                        });
+                    }
+                    break;
+                case 'add':
+                    xadmin.open('添加物品', apiUrl + 'add', 460, 330);
+                    break;
+                case 'forceRefresh':
+                    refresh(true); //强制刷新(忽视条件)
+                    break;
+
+            }
+        });
+        // 表格体工具列点击事件
+        levelTable.on('tool(goodsLevelTb)', function (obj) {
+            var event = obj.event;
+            var data = obj.data;
+            switch (event) {
+                //刷新
+                case 'refresh':
+                    var search = new Object({
+                        category: $("#searchGoodsCategory").val(),
+                        goodsName: $("#searchGoodsName").val(),
+                        min: $("#searchNumberMin").val(),
+                        max: $("#searchNumberMax").val(),
+                        handler: $("#searchHandler").val(),
+                        operate: $('#operate').val(),
+                        timeType: $('#timeType').is(':checked') ? 'create_time' : 'update_time',
+                        start: $("#start").val(),
+                        end: $("#end").val(),
+                    });
+                    $.extend(condition, search); //合并对象
+                    if (level.isExpand()) {
+                        obj.refresh();
+                    }
+                    break;
+                //入库
+                case 'inHouse':
+                    xadmin.open('物品入库', inoutHouseUrl + 'inHouse?id=' + data.id, 800, 330, false, 0.2)
+                    break;
+
+                //删除
+                case 'del':
+                    var rowIndex = obj.tr['0'].rowIndex + 1; //行号
+                    layer.msg('确定删除数据吗(' + rowIndex + ')？', {
+                        //icon: 1,
+                        time: 5000,
+                        closeBtn: true,
+                        btn: ['yes', 'no'],
+                        yes: function (index) {
+                            //do something
+                            layer.close(index);
+                            deleteByIds([data.id], obj);
+                        }
+                    });
+                    break;
+
+                //编辑
+                case 'edit':
+                    xadmin.open('物品属性编辑', apiUrl + 'edit?id=' + data.id, 460, 330, false, 0.2)
+                    break;
+
+            }
+        });
+        //监听搜索按钮、Enter（回车）
+        $(function () {
+            //回车触发
+            $(document).keyup(function (event) {
+                if (event.keyCode == 13) {
+                    $("#search").trigger("click");
+                }
+            });
+            //搜索按钮
+            $('#search').on("click", function () {
+                layer.msg('查询中，请稍等...', {icon: 16, time: 500, shade: 0});
+                getData();
+
+            });
+            //重置按钮
+            $("#reset").on("click", function () {
+                refresh();//刷新，重置搜索条件
+            });
+
+        });
+
+        //在levelTable.js中去掉加载中图标<div class="ew-tree-table-loading ew-loading-float" style="display: block;"></div>
+
+
+        //更新数据==================================begin
+        function getData(force = false) {
+            var search = new Object({
+                category: $("#searchGoodsCategory").val(),
+                goodsName: $("#searchGoodsName").val(),
+                min: $("#searchNumberMin").val(),
+                max: $("#searchNumberMax").val(),
+                handler: $("#searchHandler").val(),
+                operate: $('#operate').val(),
+                timeType: $('#timeType').is(':checked') ? 'create_time' : 'update_time',
+                start: $("#start").val(),
+                end: $("#end").val(),
+            });
+            $.extend(condition, search); //合并对象
+            flag = level.isExpand(); //是否有打开的行
+            if (!flag || force) {
+                //没有打开的行
+                $('#curPage').text('一级分页')
+                level.refresh();  // 刷新一级数据(数据模式)
+            } else {
+                //有打开的行
+                $('#curPage').text('二级分页')
+                level.refresh(condition.id); //刷新二级数据
+            }
+        }
+
+        //向外部暴露的刷新方法
+        exports('exportGetData', function () {
+            level.refresh();  // 刷新一级数据(数据模式)
+        });
+        //更新数据==================================end
+
+        //删除数据==================================begin
+        //根据id删除数据
+        function deleteByIds(ids, obj = '') {
+            $.ajax({
+                url: apiUrl + 'delete',
+                type: 'post',
+                dataType: 'json',
+                data: {ids: ids},
+                success: function (data) {
+                    if (data.code == '000') {
+                        if (obj) {
+                            obj.del();
+                        } else {
+                            $(".layui-form-checked").not('.header').parents('tr').remove(); //移除表格行
+                        }
+                        layer.msg(data.message);
+                    } else {
+                        layer.msg(data.message, {
+                            anim: 6
+                        })
+                    }
+                },
+                error: function (data) {
+                    layer.msg(data.responseText, {
+                        anim: 6
+                    })
+                }
+            })
+        }
+
+        //删除数据==================================end
+
+        //刷新，重置搜索条件
+        function refresh(force=false) {
+            $("input[type=file]").val("");//清空文件输入框
+            $(".layui-upload-choose").text("");
+            $('#searchForm')[0].reset();
+            getData(force);
+        }
+
+        //刷新当前分页组件对应关系
+        function curPage() {
+            flag = level.isExpand(); //是否有打开的行
+            if (!flag) {
+                //没有打开的行
+                $('#curPage').text('一级分页');
+            } else {
+                //有打开的行
+                $('#curPage').text('二级分页');
+            }
+        }
+
+        //刷新一级表格
+        function refreshFirst() {
+            flag = level.isExpand(); //是否有打开的行
+            let checkedData = level.checkStatus(false);  // 获取选中数据
+            let length = checkedData.length;  //选中数据条数
+            //没有打开的行才刷新
+            if (!flag) {
+                //有选中数据,延迟3分钟刷新
+                if (length > 0) {
+                    setTimeout(function () {
+                        level.refresh();  // 刷新一级数据(数据模式)
+                    }, 3 * 60 * 1000)
+                } else {
+                    level.refresh();  // 刷新一级数据(数据模式)
+                }
+            }
+
+        }
+
+        window.setInterval(refreshFirst, 10 * 1000);  //每10秒重载数据
+
+    });
+
+    //获取更新数据(编辑页面调用)
+    function getData() {
+        layui.exportGetData();
+    }
+
+
+</script>
+
+</body>
+</html>

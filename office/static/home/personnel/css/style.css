@@ -1,0 +1,62 @@
+#headImg {
+    position: absolute;
+    right: -100px;
+    top: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.book_table td {
+    position: relative;
+}
+
+.error {
+    color: red;
+    position: absolute;
+    top: 13px;
+    right: 5px;
+}
+
+.errorC {
+    border:1px solid red;
+}
+
+.checkedN {
+    border: 1px solid #1ece6d;
+}
+
+.mail {
+    box-shadow: 0 0 15px #141414;
+    width: 200px;
+    border: solid 1px silver;
+    position: absolute;
+    z-index: 10;
+    left: 6px;
+    top: 42px;
+    display: none;
+    list-style: none;
+    border-radius: 2px;
+}
+
+.mail .item {
+    background-color: #fff;
+    color: #515151;
+    cursor: pointer;
+    height: 22px;
+    line-height: 22px;
+    letter-spacing: 1px;
+    font-size: 13px;
+    padding-left: 5px;
+}
+
+/*letter-spacing字符间距*/
+.mail .item:hover {
+    background-color: #ccc;
+    color: #fff;
+}
+.book_input_select{
+    width: auto;
+    margin-left: 1%;
+    height:30px;
+    border:none;
+}

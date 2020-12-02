@@ -1,0 +1,2 @@
+[2020-12-02 18:04:20] UPDATE vacation SET `status`='4' WHERE start < '2020-12-02 18:04:20' AND status = '0'
+[2020-12-02 18:04:34] UPDATE roomApply SET `status`='3' WHERE date < '2020-12-02' AND status IN('1','2')

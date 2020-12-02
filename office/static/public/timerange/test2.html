@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>进度条演示</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+
+
+    <script type="text/javascript" src="js/jquery.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript" src="../layui/layui.js" charset="utf-8"></script>
+    <style type="text/css">
+
+        .outer {
+            width: 440px;
+            overflow: hidden;
+        }
+
+        .timeAxis {
+            width: 500px;
+            margin-left: -30px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .timeAxis .container {
+            width: 80%;
+            height: 1px;
+            margin-left: 10%;
+            background-color: #0C0C0C;
+            margin-top: 30px;
+            position: relative;
+        }
+
+
+        .timeLength {
+
+            width: 100%;
+            position: absolute;
+            top: -10px;
+            border-radius: 3px;
+        }
+
+
+        .pieces {
+            text-align: center;
+            height: 10px;
+            border-radius: 3px;
+            background-color: #393D49;
+            position: relative;
+        }
+
+        .pieces span {
+            position: absolute;
+            left: -2px;
+            top: -15px;
+            font-size: 12px;
+            color: #2196F3;
+            display: none;
+        }
+
+        .directRix {
+            width: 100%;
+        }
+
+        .directRix ul {
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .directRix ul li {
+            margin: 0;
+            list-style: none;
+            display: inline-block;
+            width: 96px;
+        }
+    </style>
+</head>
+<body style="padding: 10px">
+<div class="outer">
+    <div class="timeAxis">
+        <div class="container"></div>
+        <div class="directRix">
+            <ul>
+                <li>8:00</li>
+                <li>12:00</li>
+                <li>16:00</li>
+                <li>20:00</li>
+                <li>24:00</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+    var arr = [
+        '17:00-18:00',
+        '19:00-20:00',
+        '09:00-12:00',
+    ]
+    setTimeAxis(arr);
+
+    function setTimeAxis(arr) {
+        $.each(arr, function (index, data) {
+            setValue(data);
+        })
+    }
+
+    function setValue(time) {
+        var timeArr = time.split('-');
+        var start = timeArr[0].substr(0, 5);
+        var finish = timeArr[1].substr(0, 5);
+        var startArr = start.split(':');
+        var finishArr = finish.split(':');
+        var s_hour = startArr[0];
+        var s_min = startArr[1];
+        var s_p = (s_hour - 8) * 60 + s_min * 1;
+
+        var f_hour = finishArr[0];
+        var f_min = finishArr[1];
+        var f_p = (f_hour - 8) * 60 + f_min * 1;
+
+        var left = (s_p / (16 * 60)) * 500 * 0.8;
+        var lenght = ((f_p - s_p) / (16 * 60)) * 500 * 0.8;
+
+        var timeLength = $('<div class="timeLength">\n' +
+            '            <div class="pieces">\n' +
+            '                <span></span>\n' +
+            '            </div>\n' +
+            '        </div>')
+        timeLength.css('margin-left', left + 'px');
+        timeLength.css('width', lenght + 'px');
+        timeLength.find('span').text(start + '~' + finish);
+        $('.timeAxis .container').append(timeLength);
+    }
+
+    $('.pieces').hover(function () {
+        $(this).find('span').css('display', 'block');
+    }, function () {
+        $(this).find('span').css('display', 'none');
+    })
+
+
+</script>
+
+
+</body>
+</html>

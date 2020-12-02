@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <link rel="stylesheet" href="/static/admin/index/css/font.css">
+    <link rel="stylesheet" href="/static/admin/index/css/xadmin.css">
+    <script src="/static/public/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/admin/index/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/public/js/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+
+                <!--会议室申请搜索功能：begin-->
+                <div class="" style="padding: 10px 15px;">
+                    <form class="layui-form layui-col-space5" id="searchForm">
+
+                        <label for="searchRoom">会议室</label>
+                        <div class="layui-inline">
+                            <select id="searchRoom" name="searchRoom" lay-verify="" lay-search>
+                                <option value="">请搜索选择会议室</option>
+                            </select>
+                        </div>
+                        <label for="searchStatus">申请状态</label>
+                        <div class="layui-inline" style="width: 100px">
+                            <select id="searchStatus" name="searchRoom" lay-verify="" lay-search>
+                                <option value="-1">全部</option>
+                                <option value="0">申请中</option>
+                                <option value="1">已申请</option>
+                                <option value="2">正在使用</option>
+                                <option value="3">已使用</option>
+                                <option value="4">申请过期</option>
+                                <option value="5">申请关闭</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline" style="width: 100px">
+                            <input class="layui-input" autocomplete="off" placeholder="请输入日期" name="finish"
+                                   id="dateStart">
+                        </div>
+                        <span class="iconfont">&#xe697;=</span>
+                        <label for="dateEnd">使用日期</label>
+                        <div class="layui-inline" style="width: 100px">
+                            <input class="layui-input" autocomplete="off" placeholder="请输入日期" name="finish"
+                                   id="dateEnd">
+                        </div>
+
+
+                        <div class="layui-inline" style="width: 100px">
+                            <input class="layui-input" autocomplete="off" placeholder="请输入时间" name="start" id="start">
+                        </div>
+
+                        <span class="iconfont">&#xe697;=</span>
+                        <div class="layui-inline" style="width: 65px">
+                            <input type="checkbox" checked="" name="open" id="timeType" lay-skin="switch"
+                                   lay-filter="switchTest"
+                                   lay-text="开始|结束">
+                        </div>
+                        <span class="iconfont">&#xe697;=</span>
+                        <div class="layui-inline" style="width: 100px">
+                            <input class="layui-input" autocomplete="off" placeholder="请输入时间" name="finish"
+                                   id="finish">
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn" lay-submit="" lay-filter="sreach" title="搜索" id="search"><i
+                                    class="layui-icon">&#xe615;</i></a>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn layui-btn-primary" lay-submit="" lay-filter="sreach" title="重置"
+                               id="reset"><i
+                                    class="iconfont">&#xe6aa;</i></a>
+                        </div>
+
+                    </form>
+                </div>
+                <!--会议室搜索功能：end-->
+                <!--表格数据：begin-->
+
+                <table class="layui-hide layui-table layui-form" id="test" lay-filter="test"></table>
+                <!--自定义显示-->
+                <script type="text/html" id="roomTpl">
+                    {{d.roomNo}}--{{d.roomName}}
+                </script>
+                <script type="text/html" id="applicantTpl">
+                    {{d.userNo}}--{{d.username}}
+                </script>
+                <script type="text/html" id="statusTpl">
+                    {{#  switch(d.status){
+                    case '0':
+                    }}
+                    <span style="color: #ff934a;">申请中</span>
+                    {{#  break;
+                    case '1':
+                    }}
+                    <span style="color: #2c8af5;">申请通过</span>
+                    {{#  break;
+                    case '2':
+                    }}
+                    <span style="color: #5FB878;">正在使用</span>
+                    {{#  break;
+                    case '3':
+                    }}
+                    <span style="color: #6b6b6b;">已使用</span>
+                    {{#  break;
+                    case '4':
+                    }}
+                    <span style="color: #7d72f5;">申请过期</span>
+                    {{#  break;
+                    case '5':
+                    }}
+                    <span style="color: #f52e21;">申请关闭</span>
+                    {{#  break;} }}
+                </script>
+
+                <script type="text/html" id="barDemo">
+                    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="detail" title="查看"><i
+                            class="layui-icon">&#xe615;</i></a>
+                    {{#  switch(d.status){
+                    case '0':
+                    case '1':
+                    }}
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="revoke" title="关闭申请"><i
+                            class="iconfont">&#xe71a;</i></a>
+                    {{#  break;
+                    default:
+                    }}
+                    {{#  break;} }}
+                </script>
+                <!--表格数据：begin-->
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/public/layui/import.js"></script>
+<script>
+    //接收后端传来的参数
+    //定义统一资源路径
+    var apiUrl = '{$apiUrl}';
+
+    //setInterval(getHistory, 60*1000); //每隔1分钟刷新数据表,当停留在在其他页面时,该页面刷新数据,table表格列宽出现问题
+
+
+    //初始化
+    getRoom(); //获取会议室
+
+    /*===================================显示数据：begin==========================*/
+    //获取数据
+    function getHistory() {
+        layui.use('table', function () {
+            var table = layui.table;
+            var index = layer.msg('查询中，请稍等...', {icon: 16, time: false, shade: 0});
+            table.reload('test', {
+                //page: {curr: 2},
+                where: {
+                    roomId: $('#searchRoom').val(),
+                    status: $('#searchStatus').val(),
+                    dateStart: $('#dateStart').val(),
+                    dateEnd: $('#dateEnd').val(),
+                    timeType: $('#timeType').is(':checked') ? 'start' : 'finish',
+                    start: $("#start").val(),
+                    finish: $("#finish").val(),
+                },//传递参数 keyWord是获取页面中的关键词
+            })
+            setTimeout(function () {
+                layer.close(index)
+            }, 500)
+        });
+    }
+
+    //获取所有会议室
+    function getRoom() {
+        $.ajax({
+            url: apiUrl + 'getRoom',
+            type: 'get',
+            dataType: 'json',
+            data: '',
+            success: function (data) {
+                if (data.code == '000') {
+                    //console.log(data.message);
+                    $("#searchRoom option").remove();
+                    $("#searchRoom").append("<option value=''>请搜索选择会议室</option>"); //为Select追加一个Option(下拉项)
+                    $.each(data.data, function (index, value) {
+                        $("#searchRoom").append("<option value='" + value.id + "'>" + value.roomNo + '--' + value.roomName + "</option>"); //为Select追加一个Option(下拉项)
+                    });
+                    //layui的select选项动态添加数据后，需要初始化容器，否则数据显示不出来
+                    layui.use(['form'], function () {
+                        layui.form.render('select');
+                    });
+                } else {
+                    layer.msg(data.message, {
+                        anim: 6
+                    })
+                }
+            }
+        })
+    }
+
+
+    //刷新，重置搜索条件
+    function refresh() {
+        $("input[type=file]").val("");//清空文件输入框
+        $(".layui-upload-choose").text("");
+        $('#searchForm')[0].reset();
+        getHistory();
+    }
+
+    layui.use(['layer', 'table', 'treeSelect', 'laydate', 'form'], function () {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            table = layui.table,
+            form = layui.form,
+            laydate = layui.laydate;
+
+        /*==================表格数据初始化：begin=================*/
+        table.render({
+            elem: '#test',
+            height: 'full-200',
+            toolbar: false, //开启头部工具栏，并为其绑定左侧模板
+            cellMinWidth: 80, //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            url: apiUrl + 'getHistory',
+            cols: [[
+                {type: 'numbers', width: '8%', title: '序号'},
+                //{field: 'id', width: '2%', title: 'ID', sort: true},
+                {templet: '#roomTpl', width: '12%', title: '会议室', sort: true},
+                {field: 'theme', title: '会议主题'},
+                {field: 'date', width: '9%', title: '使用日期', sort: true},
+                {field: 'start', width: '9%', title: '开始使用', sort: true},
+                {field: 'finish', width: '9%', title: '结束使用', sort: true},
+                {field: 'create_time', width: '13%', title: '申请时间', sort: true},
+                {field: 'status', width: '8%', title: '状态', templet: '#statusTpl', unresize: true, sort: true},
+                {field: 'update_time', width: '13%', title: '更新时间', sort: true, hide: true},
+                {fixed: 'right', width: 140, title: '操作', align: 'left', toolbar: '#barDemo'}
+            ]],
+            page: true,
+            where: {
+                roomId: '',
+                status: $('#searchStatus').val(),
+                dateStart: '',
+                dateEnd: '',
+                timeType: '',
+                start: '',
+                finish: '',
+            },//传递参数 keyWord是获取页面中的关键词
+
+        });
+        /*=======================表格数据初始化：end======================*/
+
+        //监听会议室状态操作
+        form.on('switch(statusAction)', function (obj) {
+            var id = this.value;
+            var status = obj.elem.checked ? 1 : 0;
+            $.ajax({
+                url: apiUrl + 'editStatus',
+                type: 'post',
+                dataType: 'json',
+                data: {id: id, status: status},
+                success: function (data) {
+                    if (data.code == '000') {
+                        layer.tips(data.message, obj.othis);
+                    } else {
+                        layer.tips(data.message, obj.othis, {
+                            anim: 6
+                        })
+                    }
+                },
+                error: function (data) {
+                    layer.msg(data.responseText, {
+                        anim: 6
+                    });
+                    setTimeout(function () {
+                        getHistory();
+                    }, 1500)
+
+                }
+            })
+
+        });
+
+        //监听搜索按钮、Enter（回车）
+        $(function () {
+            //回车触发
+            $(document).keyup(function (event) {
+                if (event.keyCode == 13) {
+                    $("#search").trigger("click");
+                }
+            });
+            //搜索按钮
+            $('#search').on("click", function () {
+                getHistory();
+
+            });
+            //重置按钮
+            $("#reset").on("click", function () {
+                refresh();//刷新，重置搜索条件
+            });
+
+        });
+
+
+        //编辑申请状态(撤销申请)
+        function editStatus(ids,action){
+            $.ajax({
+                url: apiUrl + 'editStatus',
+                type: 'post',
+                dataType: 'json',
+                data: {ids: ids,action:action},
+                success: function (data) {
+                    if (data.code == '000') {
+                        layer.msg(data.message,{
+                            time:2000,
+                            closeBtn:true,
+                        },function () {
+                            refresh();
+                        });
+
+                    } else {
+                        layer.msg(data.message, {
+                            anim: 6
+                        })
+                    }
+                },
+                error: function (data) {
+                    layer.msg(data.responseText, {
+                        anim: 6
+                    });
+                }
+            })
+        }
+        //监听行工具事件
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                case 'detail':
+                    var statusText = '';
+                    var txColor = '';
+                    //设置会议室申请状态
+                    switch (data.status) {
+                        case '0':
+                            statusText = '申请中';
+                            txColor = '#ff934a';
+                            break;
+                        case '1':
+                            statusText = '申请通过';
+                            txColor = '#2c8af5';
+                            break;
+                        case '2':
+                            statusText = '正在使用';
+                            txColor = '#5FB878';
+                            break;
+                        case '3':
+                            statusText = '已使用';
+                            txColor = '#6b6b6b';
+                            break;
+                        case '4':
+                            statusText = '申请过期';
+                            txColor = '#7d72f5';
+                            break;
+                        case '5':
+                            statusText = '申请关闭';
+                            txColor = '#f52e21';
+                            break;
+                    }
+                    xadmin.open('预约详情(<span style="color: '+txColor+'">'+statusText+'</span>)', apiUrl + 'indexDetail?id=' + data.id, 860, 500)
+                    break;
+                case 'revoke':
+                    var rowIndex=obj.tr['0'].rowIndex+1; //行号
+                    layer.msg('确定关闭申请吗？' + rowIndex, {
+                        //icon: 1,
+                        time: 5000, //2秒关闭（如果不配置，默认是3秒）
+                        closeBtn:true,
+                        btn: ['yes', 'no'],
+                        yes: function (index, layero) {
+                            //do something
+                            editStatus([data.id], 'close');
+                            layer.close(index);
+                        }
+                    });
+                    break;
+
+
+            }
+        });
+        //监听单元格编辑
+        table.on('edit(test)', function (obj) {
+            var value = obj.value //得到修改后的值
+                , data = obj.data //得到所在行所有键值
+                , field = obj.field; //得到字段
+            layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+        });
+
+
+        // 监听全选
+        form.on('checkbox(checkall)', function (data) {
+
+            if (data.elem.checked) {
+                $('tbody input').prop('checked', true);
+            } else {
+                $('tbody input').prop('checked', false);
+            }
+            form.render('checkbox');
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start', //指定元素
+            type: 'time',
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#finish', //指定元素
+            type: 'time'
+        });
+        laydate.render({
+            elem: '#dateStart', //指定元素
+            type: 'date',
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#dateEnd', //指定元素
+            type: 'date'
+        });
+
+
+    });
+    /*显示数据：end*/
+    /*tips层:begin*/
+
+    /*tips层:end*/
+
+</script>
+
+</body>
+</html>
